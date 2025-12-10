@@ -195,6 +195,9 @@ function update() {
         clearInterval(starSpawnId);
         clearInterval(bombSpawnId);
 
+        this.game.events.emit("game-over", { score });
+        this.game.pause();
+
         return;
         // game over scene 으로 전환?
     }

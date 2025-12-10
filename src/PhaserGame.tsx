@@ -57,8 +57,14 @@ export const PhaserGame = forwardRef<IRefPhaserGame, IProps>(
                     }
                 }
             );
+
+            game.current.events.on("game-over", (data) => {
+                console.log(data.score, " ####### GAME OVER EVENT EMITTED!");
+            });
+
             return () => {
                 EventBus.removeListener("current-scene-ready");
+                game.current.events.removeListener("game-over");
             };
         }, [currentActiveScene, ref]);
 
