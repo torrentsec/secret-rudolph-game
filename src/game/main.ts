@@ -1,6 +1,6 @@
 // import { AUTO, Game } from "phaser";
 import Phaser, { Game } from "phaser";
-import { items, itemKeys, tempItems } from "./items.js";
+import { items, itemKeys, tempItems } from "./items.ts";
 
 // const GAME_PLAY_TIME = 30000; // 30 seconds
 const GAME_PLAY_TIME = 20000;
