@@ -32,7 +32,7 @@ export class Preloader extends Scene {
 
     this.load.image("logo", "logo.png");
     this.load.image("star", "star.png");
-    this.load.image("cash", "cash.svg");
+    this.load.image("cash", "/items/cash.svg");
   }
 
   create() {
@@ -43,4 +43,3 @@ export class Preloader extends Scene {
     this.scene.start("MainMenu");
   }
 }
-
