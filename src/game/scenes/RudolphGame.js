@@ -21,6 +21,7 @@ export class RudolphGame extends Phaser.Scene {
     this.leftKey;
     this.rightKey;
 
+    // this.title;
     this.score = 0;
     this.scoreText;
 
@@ -67,16 +68,9 @@ export class RudolphGame extends Phaser.Scene {
   }
 
   spawnLikedItems(x, items = []) {
-    // gameObject.setRandomPosition
-    // console.log("3333333", items);
-
     const itemList = items.length > 0 ? items : ["star", "ring", "cash"];
     const item = itemList[this.generateRandomInteger(0, itemList.length)];
 
-    // if (this.gameOver) {
-    //   console.log(this.stars, "<<< stars");
-    //   return;
-    // }
     let star = this.stars.create(x, 16, item);
     star.name = item;
     star.setDisplaySize(25, 25);
@@ -91,7 +85,6 @@ export class RudolphGame extends Phaser.Scene {
     const item = itemList[this.generateRandomInteger(0, itemList.length)];
 
     let bomb = this.bombs.create(x, 16, item);
-    // bomb.setBounce(1);
     bomb.name = item;
     bomb.setCollideWorldBounds(true);
     bomb.setDisplaySize(25, 25);
@@ -110,6 +103,7 @@ export class RudolphGame extends Phaser.Scene {
 
     // this.gameOver = true;
     // this.game.pause(); // this blocks scene changes
+    this.registry.gameScore = this.score;
 
     this.game.events.emit("game-over", { score: this.score });
 
@@ -190,6 +184,28 @@ export class RudolphGame extends Phaser.Scene {
   }
 
   create() {
+    // this.title = this.add
+    //   .text(182, this.scene.systems.scale.height / 2, "Click to Play", {
+    //     fontFamily: "Arial Black",
+    //     fontSize: 30,
+    //     color: "#ffffff",
+    //     stroke: "#000000",
+    //     strokeThickness: 8,
+    //     align: "center",
+    //   })
+    //   .setOrigin(0.5)
+    //   .setDepth(100);
+
+    // this.title.setInteractive().on(
+    //   "pointerdown",
+    //   function () {
+    //     // this.startGame();
+    //     console.log("play Clicked@@@@@ ");
+    //     // this.game.events.emit("game-init");
+    //   },
+    //   this
+    // );
+
     this.background = this.make.image({
       x: 182,
       y: GAME_HEIGHT / 2 - 10,

@@ -11,6 +11,7 @@ function App() {
   const [spritePosition, setSpritePosition] = useState({ x: 0, y: 0 });
 
   const router = useRouter();
+  const [isVisible, setIsVisible] = useState(false);
   const [gameId, setGameId] = useState("");
 
   //  References to the PhaserGame component (game and scene are exposed)
@@ -33,21 +34,6 @@ function App() {
       }
     }
   };
-
-  // const moveSprite = () => {
-  //   if (phaserRef.current) {
-  //     const scene = phaserRef.current.scene as MainMenu;
-
-  //     if (scene && scene.scene.key === "MainMenu") {
-  //       // Get the update logo position
-  //       scene.moveLogo(({ x, y }) => {
-  //         setSpritePosition({ x, y });
-  //       });
-
-  //       scene.spawnItem("cash");
-  //     }
-  //   }
-  // };
 
   const spawnBeer = () => {
     if (phaserRef.current) {
@@ -72,8 +58,10 @@ function App() {
   };
 
   const start = () => {
+    console.log(" START !!!!");
+
     const gameData = fetchGameData(gameId);
-    console.log(gameData);
+    // console.log(gameData);
     // { likes, dislikes, name }
     const likes = gameData.likes || [itemKeys.SNOWFLAKE];
     const dislikes = gameData.dislikes || ["bomb"];
@@ -83,6 +71,8 @@ function App() {
 
       if (scene && scene.scene.key === "RudolphGame") {
         scene.startGame({ likes, dislikes });
+
+        setIsVisible(false);
       }
     }
   };
@@ -90,39 +80,35 @@ function App() {
   // Event emitted from the PhaserGame component
   const currentScene = (scene: Phaser.Scene) => {
     setCanMoveSprite(scene.scene.key !== "MainMenu");
+
+    if (scene.scene.key === "RudolphGame") {
+      setIsVisible(true);
+    }
+    // setIsVisible(scene.scene.key === 'RudolphGame')
   };
 
   return (
     <div id="app">
-      {/* <button onClick={moveSprite}>spawn item</button> */}
-      <div>
-        <div>
+      {isVisible && (
+        <div className="absolute w-full h-full z-10 bg-black/50 flex justify-center items-center">
+          {/* <div>
           <button className="button" onClick={callGameover}>
             Trigger Game over
           </button>
-        </div>
-        {/* <div>
-          <button
-            disabled={canMoveSprite}
-            className="button"
-            onClick={moveSprite}
-          >
-            Toggle Movement
-          </button>
         </div> */}
-        <div className="spritePosition">
+          {/* <div className="spritePosition">
           Sprite Position:
           <pre>{`{\n  x: ${spritePosition.x}\n  y: ${spritePosition.y}\n}`}</pre>
-        </div>
-        <div>
-          <button className="button" onClick={start}>
-            Start
+        </div> */}
+          <button
+            type="button"
+            className="w-fit h-fit bg-black p-5 border hover:bg-gray-800 hover:cursor-pointer"
+            onClick={start}
+          >
+            Click to Play
           </button>
-          {/* <button className="button" onClick={spawnBeer}>
-            Spawn beer
-          </button> */}
         </div>
-      </div>
+      )}
       <PhaserGame
         ref={phaserRef}
         currentActiveScene={currentScene}
