@@ -17,12 +17,13 @@ export interface IRefPhaserGame {
 interface IProps {
   currentActiveScene?: (scene_instance: Phaser.Scene) => void;
   gameId: string; // length is 10 ?
+  friendName: string;
 }
 
 export const PhaserGame = forwardRef<IRefPhaserGame, IProps>(
-  function PhaserGame({ currentActiveScene, gameId }, ref) {
+  function PhaserGame({ currentActiveScene, gameId, friendName }, ref) {
     const game = useRef<Phaser.Game | null>(null!);
-    const friendName = "Jiho";
+    // const friendName = "Jiho";
     const playerName = "Anonymous";
     const [likedItems, setLikedItems] = useState([]);
     const [dislikedItems, setDislikedItems] = useState([]);
@@ -114,7 +115,7 @@ export const PhaserGame = forwardRef<IRefPhaserGame, IProps>(
     }, [currentActiveScene, ref]);
 
     return (
-      <div>
+      <div className="flex flex-col justify-center w-auto max-w-100 h-dvh mx-auto">
         <p>Let's find out what {friendName} wants for Christmas!</p>
         <div>💚 Likes: {likedItems.join(",")}</div>
         <div>💔 Dislikes: {dislikedItems.join(",")}</div>
