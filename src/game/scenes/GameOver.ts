@@ -5,6 +5,7 @@ export class GameOver extends Scene {
   camera: Phaser.Cameras.Scene2D.Camera;
   background: Phaser.GameObjects.Image;
   gameOverText: Phaser.GameObjects.Text;
+  gameScoreText: Phaser.GameObjects.Text;
 
   constructor() {
     super("GameOver");
@@ -22,14 +23,31 @@ export class GameOver extends Scene {
     });
 
     this.gameOverText = this.add
-      .text(182, this.scene.systems.scale.height / 2, "Game Over", {
+      .text(182, this.scene.systems.scale.height / 2 - 30, "Game Over", {
         fontFamily: "Arial Black",
-        fontSize: 36,
+        fontSize: 24,
         color: "#ffffff",
         stroke: "#000000",
         strokeThickness: 8,
         align: "center",
       })
+      .setOrigin(0.5)
+      .setDepth(100);
+
+    this.gameScoreText = this.add
+      .text(
+        182,
+        this.scene.systems.scale.height / 2 + 30,
+        `Your Score: ${this.registry?.gameScore}`,
+        {
+          fontFamily: "Arial Black",
+          fontSize: 30,
+          color: "#ffffff",
+          stroke: "#000000",
+          strokeThickness: 8,
+          align: "center",
+        }
+      )
       .setOrigin(0.5)
       .setDepth(100);
 
@@ -40,4 +58,3 @@ export class GameOver extends Scene {
     this.scene.start("MainMenu");
   }
 }
-
