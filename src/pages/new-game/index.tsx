@@ -12,31 +12,73 @@ const MIN_DISLIKES_COUNT = 1;
 const MAX_DISLIKES_COUNT = 5;
 
 function GameCreateSuccess({ uniqueId }: { uniqueId: string }) {
+  const handleCopyCode = async () => {
+    try {
+      await navigator.clipboard.writeText(uniqueId);
+      alert("Game code copied!");
+    } catch (err) {
+      console.error("Failed to copy!", err);
+      alert("Failed to copy the code. Please copy it manually.");
+    }
+  };
+
   return (
-    <div>
+    <div className="flex flex-col gap-4 justify-center">
+      <h1 className="text-xl font-bold p-4">
+        Game has been successfully created!
+      </h1>
       <p>
-        Game has been successfully created! <br />
         Your code: {uniqueId}
-        <button className="bg-green-500">Copy code</button>
+        <button
+          className="bg-green-600 cursor-pointer"
+          onClick={handleCopyCode}
+        >
+          Copy
+        </button>
         <br />
+      </p>
+      <p>
         Share the link with your friends to find out how well they guess your
-        wishlist by playing the game. <br />
+        wishlist by playing the game.
       </p>
       <p>
         Please keep in mind you will need to save the link or code to check the
         game results.
       </p>
       <div>
-        Share
-        <ul className="flex">
-          <li>Facebook</li>
-          <li>X</li>
-          <li>Whatsapp</li>
-          <li>KakaoTalk</li>
-          <li>Copy link</li>
+        🔗 Share
+        <ul className="flex gap-2">
+          <li className="p-2 rounded-2xl bg-white text-black cursor-pointer">
+            Facebook
+          </li>
+          <li className="p-2 rounded-2xl bg-white text-black cursor-pointer">
+            X
+          </li>
+          <li className="p-2 rounded-2xl bg-white text-black cursor-pointer">
+            Whatsapp
+          </li>
+          <li className="p-2 rounded-2xl bg-white text-black cursor-pointer">
+            KakaoTalk
+          </li>
+          <li className="p-2 rounded-2xl bg-white text-black cursor-pointer">
+            Copy link
+          </li>
         </ul>
       </div>
-      <Link href={`/game?gameId=${uniqueId}`}>Play game</Link>
+      <div className="flex gap-2 mt-3 text-center">
+        <Link
+          href={`/game?gameId=${uniqueId}`}
+          className="flex-1 w-fit px-6 py-4 rounded-xl bg-green-700 hover:bg-green-800 cursor-pointer"
+        >
+          Play game
+        </Link>
+        <Link
+          href="/"
+          className="flex-1 px-6 py-4 rounded-xl bg-green-700 hover:bg-green-800 cursor-pointer"
+        >
+          Back to main
+        </Link>
+      </div>
     </div>
   );
 }
@@ -319,8 +361,8 @@ function GameCreateSteps({ setGameId }: Props) {
 }
 
 export default function NewGame({}: Props) {
-  // const [gameId, setGameId] = useState<string | undefined>("068Duw7BoV"); // initialised for testing
-  const [gameId, setGameId] = useState<string | undefined>(""); // initialised for testing
+  const [gameId, setGameId] = useState<string | undefined>("2X1dWgwnao"); // initialised for testing
+  // const [gameId, setGameId] = useState<string | undefined>("");
 
   return (
     <section className="flex flex-col justify-center gap-5 w-[500px] max-w-dvw h-auto p-5 mx-auto">
