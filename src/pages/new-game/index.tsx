@@ -4,14 +4,23 @@ import Image from "next/image";
 import Link from "next/link";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 
-type Props = { setGameId: Dispatch<SetStateAction<string | undefined>> };
+type Props = {
+  setGameId: Dispatch<SetStateAction<string | undefined>>;
+  setCreatedBy: Dispatch<SetStateAction<string>>;
+};
 
 const MIN_LIKES_COUNT = 1;
 const MAX_LIKES_COUNT = 5;
 const MIN_DISLIKES_COUNT = 1;
 const MAX_DISLIKES_COUNT = 5;
 
-function GameCreateSuccess({ uniqueId }: { uniqueId: string }) {
+function GameCreateSuccess({
+  uniqueId,
+  nickname,
+}: {
+  uniqueId: string;
+  nickname: string;
+}) {
   const handleCopyCode = async () => {
     try {
       await navigator.clipboard.writeText(uniqueId);
@@ -39,7 +48,9 @@ function GameCreateSuccess({ uniqueId }: { uniqueId: string }) {
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-xl font-bold p-4">
-        Game has been successfully created!
+        Congrats, {nickname}! 🎉
+        <br />
+        Your game has been successfully created!
       </h1>
       <div className="font-semibold">
         Your code: {uniqueId}
@@ -99,7 +110,7 @@ function GameCreateSuccess({ uniqueId }: { uniqueId: string }) {
   );
 }
 
-function GameCreateSteps({ setGameId }: Props) {
+function GameCreateSteps({ setGameId, setCreatedBy }: Props) {
   const totalSteps = 4;
   const [currentStep, setCurrentStep] = useState(1);
   const isLastStep = useMemo(() => currentStep === totalSteps, [currentStep]);
@@ -151,10 +162,9 @@ function GameCreateSteps({ setGameId }: Props) {
   };
 
   const handleCreateGame = () => {
-    //create hash
     const uniqueId = generateUniqueHash();
     const newGameData = {
-      name: nickname, // owner name
+      name: nickname,
       likes: selectedLikes,
       dislikes: selectedDislikes,
       result: [], // { player: 'anonymous', score: 5 }
@@ -164,6 +174,7 @@ function GameCreateSteps({ setGameId }: Props) {
     localStorage.setItem(uniqueId, JSON.stringify(newGameData));
     // console.log("saved!@@@@@", uniqueId, newGameData);
     setGameId(uniqueId);
+    setCreatedBy(nickname);
   };
 
   const handleItemClick = (
@@ -199,6 +210,7 @@ function GameCreateSteps({ setGameId }: Props) {
 
   useEffect(() => {
     setErrorMessage("");
+    scrollTo(0, 0);
   }, [currentStep]);
 
   const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -215,13 +227,14 @@ function GameCreateSteps({ setGameId }: Props) {
 
   return (
     <>
-      <h1>
+      <h1 className="text-2xl font-semibold text-center">Create new game</h1>
+      <h2>
         If Santa were to get you presents, what would you like or dislike for
         Christmas?
-      </h1>
-      <h2>
-        Step {currentStep} / {totalSteps}
       </h2>
+      <h3>
+        Step {currentStep} / {totalSteps}
+      </h3>
       <div className={`${currentStep === 1 ? "block" : "hidden"}`}>
         <label htmlFor="nickname">What is your nickname?</label>
         <p className="text-sm text-gray-200 my-2">
@@ -243,9 +256,9 @@ function GameCreateSteps({ setGameId }: Props) {
       </div>
 
       <div className={currentStep === 2 ? "block" : "hidden"}>
-        <div>I would like.. {selectedLikes.length} selected</div>
-        <p>
-          Select {MIN_LIKES_COUNT} to {MAX_LIKES_COUNT} items
+        <div>I would like.. 💚 {selectedLikes.length} selected</div>
+        <p className="my-2">
+          * Select {MIN_LIKES_COUNT} to {MAX_LIKES_COUNT} items
         </p>
         <ul className="grid grid-cols-4 md:grid-cols-5 gap-2 md:gap-3">
           {Object.entries(itemOptions).map(([itemKey, itemData]) => {
@@ -274,8 +287,8 @@ function GameCreateSteps({ setGameId }: Props) {
       </div>
 
       <div className={currentStep === 3 ? "block" : "hidden"}>
-        <div>I would NOT like.. {selectedDislikes.length} selected</div>
-        <p>
+        <div>I would NOT like.. 💔 {selectedDislikes.length} selected</div>
+        <p className="my-2">
           Select {MIN_DISLIKES_COUNT} to {MAX_DISLIKES_COUNT} items
         </p>
 
@@ -305,15 +318,31 @@ function GameCreateSteps({ setGameId }: Props) {
         </ul>
       </div>
 
-      <div className={`${currentStep === 4 ? "block" : "hidden"}`}>
-        <p>Nickname: {nickname}</p>
-        <p>Selected items: </p>
+      <div
+        className={`${currentStep === 4 ? "flex" : "hidden"} flex-col gap-2`}
+      >
+        <div className="mb-2">
+          <div className="font-semibold mb-2">⭐️ Nickname:</div>
+          <span className="text-black px-2 py-1 rounded-lg bg-green-100">
+            {nickname}
+          </span>
+          {/* <input
+            type="text"
+            id="nickname"
+            value={nickname}
+            readOnly
+            className="px-3 py-1 w-fit border-b border-green-100 "
+          /> */}
+        </div>
+
+        <p className="font-semibold">🎁 Your wishlist: </p>
         <div className="flex flex-col gap-2">
           <p>Likes: {selectedLikes.length} items selected</p>
           <ul className="flex gap-2">
             {selectedLikes.map((key) => (
-              <li className="p-2 rounded-2xl text-sm bg-green-100 text-black">
+              <li className="p-2 rounded-2xl text-center text-sm bg-green-100 text-black">
                 <Image
+                  className="mx-auto"
                   src={itemOptions[key].path}
                   width={30}
                   height={30}
@@ -328,8 +357,9 @@ function GameCreateSteps({ setGameId }: Props) {
           <p>Dislikes: {selectedDislikes.length} items selected</p>
           <ul className="flex gap-2">
             {selectedDislikes.map((key) => (
-              <li className="p-2 rounded-2xl text-sm bg-green-100 text-black">
+              <li className="p-2 rounded-2xl text-center text-sm bg-green-100 text-black">
                 <Image
+                  className="mx-auto"
                   src={itemOptions[key].path}
                   width={30}
                   height={30}
@@ -340,6 +370,10 @@ function GameCreateSteps({ setGameId }: Props) {
             ))}
           </ul>
         </div>
+        <p className="mt-5">
+          Would you like to proceed to create the game with these item
+          selections?
+        </p>
       </div>
 
       <div
@@ -352,15 +386,15 @@ function GameCreateSteps({ setGameId }: Props) {
 
       <div className="flex gap-2">
         <button
-          className="flex-1/2 p-3 rounded-xl bg-green-700 hover:cursor-pointer disabled:cursor-not-allowed disabled:bg-green-900"
+          className="flex-1/2 p-3 rounded-xl bg-green-700 hover:bg-green-800 hover:cursor-pointer disabled:cursor-not-allowed disabled:bg-green-900"
           disabled={currentStep <= 1}
           onClick={handlePrevClick}
         >
-          Prev
+          Back
         </button>
 
         <button
-          className="flex-1/2 p-3 rounded-xl bg-green-700 hover:cursor-pointer"
+          className="flex-1/2 p-3 rounded-xl bg-green-700 hover:bg-green-800 hover:cursor-pointer"
           onClick={handleNextClick}
         >
           {isLastStep ? "Create game" : "Next"}
@@ -373,13 +407,14 @@ function GameCreateSteps({ setGameId }: Props) {
 export default function NewGame({}: Props) {
   // const [gameId, setGameId] = useState<string | undefined>("2X1dWgwnao"); // initialised for testing
   const [gameId, setGameId] = useState<string | undefined>("");
+  const [createdBy, setCreatedBy] = useState<string>("");
 
   return (
-    <section className="flex flex-col justify-center gap-5 w-125 max-w-dvw h-dvh overflow-y-scroll px-5 py-20 mx-auto">
+    <section className="flex flex-col justify-center gap-5 w-125 max-w-dvw h-auto min-h-dvh overflow-y-scroll px-5 py-15 mx-auto">
       {gameId ? (
-        <GameCreateSuccess uniqueId={gameId} />
+        <GameCreateSuccess uniqueId={gameId} nickname={createdBy} />
       ) : (
-        <GameCreateSteps setGameId={setGameId} />
+        <GameCreateSteps setGameId={setGameId} setCreatedBy={setCreatedBy} />
       )}
     </section>
   );
