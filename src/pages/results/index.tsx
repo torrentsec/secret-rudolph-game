@@ -140,6 +140,11 @@ export default function ResultsPage({}: Props) {
               </li>
             );
           })}
+          {gameData.result.length === 0 && (
+            <li className="text-center my-5">
+              No players yet. Be the first one!
+            </li>
+          )}
         </ul>
       </div>
 
