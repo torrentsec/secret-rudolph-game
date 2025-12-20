@@ -10,6 +10,8 @@ type Props = {};
 export default function ResultsPage({}: Props) {
   const router = useRouter();
   const gameId = useMemo(() => router.query.gameId, [router]);
+  const [gameCode, setGameCode] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const [isLoading, setIsLoading] = useState(true);
   const [gameData, setGameData] = useState<GameInformation>();
@@ -46,22 +48,100 @@ export default function ResultsPage({}: Props) {
   };
 
   useEffect(() => {
-    // if game id is valid
     if (!gameId || typeof gameId !== "string") {
-      // @todo handle exception
-      console.error("[Results Page] Invalid game id");
+      setGameData(undefined);
       return;
     }
+
     init(gameId);
   }, [gameId]);
+
+  const handleShareResult = () => {
+    const shareUrl = `${window.location.origin}/results?gameId=${gameId}`;
+    if (navigator.share) {
+      navigator
+        .share({
+          title: "Secret Rudolph Game Result",
+          text: `Check out the scoreboard for ${
+            gameData?.name || "a friend"
+          }'s game!`,
+          url: shareUrl,
+        })
+        .catch((error) => console.log("Error sharing", error));
+    } else {
+      // Fallback for browsers that do not support the Web Share API
+      navigator.clipboard.writeText(shareUrl).then(
+        () => {
+          alert("Share link copied to clipboard!");
+        },
+        (err) => {
+          console.error("Could not copy text: ", err);
+        }
+      );
+    }
+  };
+
+  const handleGameCodeEnter = () => {
+    const regex = /^[a-zA-Z0-9]{10}$/;
+    if (!regex.test(gameCode.trim())) {
+      setErrorMessage("Enter a valid game code");
+      return;
+    }
+    setGameCode("");
+    setErrorMessage("");
+    router.push(`/results?gameId=${gameCode}`);
+  };
+
+  if (!gameId || typeof gameId !== "string") {
+    return (
+      <section className="flex flex-col justify-center items-center mx-auto w-full h-dvh md:w-[50%] p-10 gap-3">
+        <h1 className="text-3xl font-bold text-center">Game Result</h1>
+        <p>Enter your code to check the score board</p>
+        <label htmlFor="gameCode"></label>
+        <input
+          type="text"
+          id="gameCode"
+          value={gameCode}
+          placeholder="ex. aAaAaaaAaa (10 characters)"
+          onChange={(e) => setGameCode(e.target.value)}
+          className="rounded-xl p-3 bg-gray-100 text-black min-w-75"
+        />
+        <p
+          className={`${
+            errorMessage.length > 0 ? "visible" : "invisible"
+          } bg-red-200 border border-red-700 py-1 px-3 rounded-lg text-red-900 text-sm`}
+        >
+          ⚠️ {errorMessage}
+        </p>
+        <button
+          className="mt-2 mx-auto cursor-pointer bg-green-700 text-white py-2 px-4 rounded-xl"
+          onClick={handleGameCodeEnter}
+        >
+          Enter
+        </button>
+      </section>
+    );
+  }
 
   if (isLoading) {
     return <section> Loading results..</section>;
   }
 
   if (!gameData) {
-    // @todo set error boundary ?
-    return <div> Game Result </div>;
+    return (
+      <section className="flex flex-col justify-center items-center mx-auto w-full md:w-[50%] p-10 gap-5">
+        <p>
+          Game result not found. <br />
+          Check your game code and try again.
+        </p>
+        <Link
+          href="/results"
+          className="p-3 rounded-2xl bg-green-700 hover:bg-green-800 text-center font-semibold cursor-pointer"
+        >
+          Go back
+        </Link>
+      </section>
+    );
   }
 
   return (
@@ -140,6 +220,11 @@ export default function ResultsPage({}: Props) {
               </li>
             );
           })}
+          {gameData.result.length === 0 && (
+            <li className="text-center my-5">
+              No players yet. Be the first one!
+            </li>
+          )}
         </ul>
       </div>
 
@@ -156,7 +241,10 @@ export default function ResultsPage({}: Props) {
         >
           Create your own game
         </Link>
-        <button className="p-3 rounded-2xl bg-green-700 hover:bg-green-800 text-center font-semibold cursor-pointer">
+        <button
+          onClick={handleShareResult}
+          className="p-3 rounded-2xl bg-green-700 hover:bg-green-800 text-center font-semibold cursor-pointer"
+        >
           Share the result
         </button>
       </div>

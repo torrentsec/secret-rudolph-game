@@ -16,7 +16,7 @@ export interface IRefPhaserGame {
 
 interface IProps {
   currentActiveScene?: (scene_instance: Phaser.Scene) => void;
-  gameId: string; // length is 10 ?
+  gameId: string;
   friendName: string;
   playerName: string;
 }

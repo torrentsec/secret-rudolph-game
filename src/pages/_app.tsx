@@ -6,10 +6,10 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
-        <title>Rudolph's Present Game</title>
+        <title>Secret Rudolph</title>
         <meta
           name="description"
-          content="Play Rudolph's Presents Game to find out what you're friends & families want for Christmas"
+          content="Play Secret Rudolph Game to find out what you're friends & families want for Christmas"
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.png" />

@@ -1,33 +1,44 @@
-// import React from "react";
 import Link from "next/link";
 
-type Props = {};
-
-function MainPage({}: Props) {
+function MainPage() {
   return (
-    <section className="flex flex-col justify-center gap-5 w-[500px] h-dvh mx-auto">
-      <h1 className="text-3xl font-bold underline">Rudolph's Game</h1>
-      <p>Welcome to Rudolph Game! 𐂂𐂂</p>
-      <p>Make a game with your wishlist and share with your friends.</p>
+    <section className="flex flex-col justify-center gap-5 w-9/10 sm:max-w-125 h-dvh overflow-y-scroll py-10 mx-auto text-center">
+      <h1 className="text-2xl font-extrabold text-green-600">
+        Secret Rudolph 𐂂𐂂
+      </h1>
+      <p>Hohoho it's holiday seasons! </p>
+      <p className="text-3xl">🎄🎅☃️</p>
       <p>
-        You will select items you would like and dislike for Christmas presents.
-        Your friends will then try to guess your wishlist by playing the game.
+        What would you like for Christmas? Make a customised game with your
+        wishlist and share with your friends.
       </p>
+      <p>Also, find out what your loved ones would like to get for Christmas</p>
+
       <p>Let's get started!</p>
 
-      <div className="flex flex-col gap-5">
+      <div className="sm:mt-5 flex flex-col w-4/5 sm:w-full sm:flex-row gap-4 justify-center mx-auto">
         <Link
           href="/new-game"
-          className="p-5 rounded-2xl bg-red-600 hover:bg-red-700 hover:cursor-pointer"
+          className="sm:flex-1 p-5 rounded-2xl font-semibold bg-white hover:bg-green-200 border-2 text-green-800 border-green-600 hover:cursor-pointer"
         >
-          Create new game
+          <div className="text-xl">Create new game</div>
+          <div className="font-medium mt-2 text-sm">
+            {/* Pick your likes & dislikes of what you want for Christmas and share
+            the link to your friends! */}
+            Select items you would like or dislike for Christmas. Your friends
+            will then try to guess your wishlist by playing the game.
+          </div>
         </Link>
 
         <Link
           href="/results"
-          className="p-5 rounded-2xl bg-green-600 hover:bg-green-700 hover:cursor-pointer"
+          className="sm:flex-1 p-5 rounded-2xl font-semibold bg-green-700 hover:bg-green-800 hover:cursor-pointer"
         >
-          Check results
+          <div className="text-xl">Check results</div>
+          <div className="font-medium mt-2 text-sm">
+            Checkout the score board of your game! <br />
+            Find out who knows you more
+          </div>
         </Link>
       </div>
     </section>
