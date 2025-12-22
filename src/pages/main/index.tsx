@@ -1,12 +1,17 @@
+import { Luckiest_Guy, Sansita_Swashed } from "next/font/google";
 import Link from "next/link";
+
+const luckiest_guy = Luckiest_Guy({ subsets: ["latin"], weight: "400" });
+const sansita_swashed = Sansita_Swashed({ subsets: ["latin"], weight: "700" });
 
 function MainPage() {
   return (
     <section className="flex flex-col justify-center gap-5 w-9/10 sm:max-w-125 h-dvh overflow-y-scroll py-10 mx-auto text-center">
-      <h1 className="text-2xl font-extrabold text-green-600">
-        Secret Rudolph 𐂂𐂂
-      </h1>
-      <p>Hohoho it's holiday seasons! </p>
+      {/* Secret Rudolph 𐂂𐂂 */}
+      {/* <h1 className={`${sansita_swashed.className} text-5xl text-green-600`}>
+        Secret Rudolph
+      </h1> */}
+      <p className="font-semibold text-xl">Hohoho it's holiday seasons! </p>
       <p className="text-3xl">🎄🎅☃️</p>
       <p>
         What would you like for Christmas? Make a customised game with your
