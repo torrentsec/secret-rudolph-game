@@ -61,7 +61,7 @@ function App() {
 
     // @todo handle invalid game data
     const likes = gameData.likes || [itemKeys.SNOWFLAKE];
-    const dislikes = gameData.dislikes || ["bomb"];
+    const dislikes = gameData.dislikes || [itemKeys.POO];
 
     if (phaserRef.current) {
       const scene = phaserRef.current.scene as RudolphGame;

@@ -39,6 +39,7 @@ export const itemKeys = {
   VIDEO_GAME: "video_game",
   WINE: "wine",
   GIFT: "gift",
+  POO: "poo",
 } as const;
 
 export type ItemKey = (typeof itemKeys)[keyof typeof itemKeys];
@@ -49,7 +50,7 @@ export interface Item {
 }
 
 export type Items = {
-  [K in ItemKey]: Item;
+  [K in ItemKey as Exclude<K, "poo">]: Item;
 };
 
 export const items: Items = {
@@ -107,7 +108,7 @@ export const items: Items = {
   },
   [itemKeys.CLOVER]: {
     path: `${PATH}clover.svg`,
-    name: "clover",
+    name: "luck",
   },
   [itemKeys.DOG]: {
     path: `${PATH}dog.svg`,
@@ -167,7 +168,7 @@ export const items: Items = {
   },
   [itemKeys.TELEVISION]: {
     path: `${PATH}television.svg`,
-    name: "television",
+    name: "TV",
   },
   [itemKeys.VACATION]: {
     path: `${PATH}travel.svg`,
@@ -184,6 +185,14 @@ export const items: Items = {
   [itemKeys.GIFT]: {
     path: `${PATH}wrapped-gift.svg`,
     name: "gift",
+  },
+};
+
+export const itemsIncludingPoop: Items & { poo: Item } = {
+  ...items,
+  [itemKeys.POO]: {
+    path: `${PATH}poo.svg`,
+    name: "poo",
   },
 };
 

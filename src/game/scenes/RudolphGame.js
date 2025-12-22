@@ -68,8 +68,7 @@ export class RudolphGame extends Phaser.Scene {
   }
 
   spawnLikedItems(x, items = []) {
-    const itemList = items.length > 0 ? items : ["star", "ring", "cash"];
-    const item = itemList[this.generateRandomInteger(0, itemList.length)];
+    const item = items[this.generateRandomInteger(0, items.length)];
 
     let star = this.stars.create(x, 16, item);
     star.name = item;
@@ -81,8 +80,7 @@ export class RudolphGame extends Phaser.Scene {
   }
 
   spwanBomb(x, items = []) {
-    const itemList = items.length > 0 ? items : ["star", "ring", "cash"];
-    const item = itemList[this.generateRandomInteger(0, itemList.length)];
+    const item = items[this.generateRandomInteger(0, items.length)];
 
     let bomb = this.bombs.create(x, 16, item);
     bomb.name = item;
@@ -169,43 +167,15 @@ export class RudolphGame extends Phaser.Scene {
       frameWidth: 64,
       frameHeight: 92,
     });
+    this.load.image("poo", "assets/items/poo.svg");
 
     // items
     Object.entries(items).forEach(([key, data]) => {
-      // console.log(key, data, "<<<<");
-
       this.load.image(key, data.path);
     });
-    //   this.load.image("ring", "assets/items/ring.svg");
-    //   this.load.image("cash", "assets/items/cash.svg");
-    //   this.load.image("bike", "assets/items/bike.svg");
-    //   this.load.image("beer", "assets/items/beer.svg");
-    //   this.load.image("cat", "assets/items/cat.svg");
   }
 
   create() {
-    // this.title = this.add
-    //   .text(182, this.scene.systems.scale.height / 2, "Click to Play", {
-    //     fontFamily: "Arial Black",
-    //     fontSize: 30,
-    //     color: "#ffffff",
-    //     stroke: "#000000",
-    //     strokeThickness: 8,
-    //     align: "center",
-    //   })
-    //   .setOrigin(0.5)
-    //   .setDepth(100);
-
-    // this.title.setInteractive().on(
-    //   "pointerdown",
-    //   function () {
-    //     // this.startGame();
-    //     console.log("play Clicked@@@@@ ");
-    //     // this.game.events.emit("game-init");
-    //   },
-    //   this
-    // );
-
     this.background = this.make.image({
       x: 182,
       y: GAME_HEIGHT / 2 - 10,

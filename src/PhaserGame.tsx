@@ -5,9 +5,11 @@ import {
   useRef,
   useState,
 } from "react";
+import Image from "next/image";
 import StartGame from "./game/main";
 import { EventBus } from "./game/EventBus";
 import { useRouter } from "next/router";
+import { ItemKey, itemsIncludingPoop } from "./game/items";
 
 export interface IRefPhaserGame {
   game: Phaser.Game | null;
@@ -27,7 +29,7 @@ export const PhaserGame = forwardRef<IRefPhaserGame, IProps>(
     ref
   ) {
     const game = useRef<Phaser.Game | null>(null!);
-    const [likedItems, setLikedItems] = useState([]);
+    const [likedItems, setLikedItems] = useState<Partial<ItemKey>[]>([]);
     const [dislikedItems, setDislikedItems] = useState([]);
     const [isGameOver, setIsGameOver] = useState(false);
 
@@ -118,10 +120,32 @@ export const PhaserGame = forwardRef<IRefPhaserGame, IProps>(
     }, [currentActiveScene, ref]);
 
     return (
-      <div className="flex flex-col justify-center w-auto max-w-100 h-dvh mx-auto">
+      <div className="flex flex-col justify-center gap-1.5 w-auto max-w-100 h-dvh mx-auto">
         <p>Let's find out what {friendName} wants for Christmas!</p>
-        <div>💚 Likes: {likedItems.join(",")}</div>
-        <div>💔 Dislikes: {dislikedItems.join(",")}</div>
+        <div className="inline-flex gap-1.5">
+          💚 Likes:{" "}
+          {likedItems.map((itemKey: ItemKey) => (
+            <Image
+              src={itemsIncludingPoop[itemKey].path}
+              width={24}
+              height={24}
+              alt={itemKey}
+            />
+          ))}
+        </div>
+        <div className="inline-flex gap-1.5">
+          💔 Dislikes:{" "}
+          {dislikedItems.map((itemKey: ItemKey) => (
+            <Image
+              src={itemsIncludingPoop[itemKey].path}
+              width={24}
+              height={24}
+              alt={itemKey}
+            />
+          ))}
+        </div>
+        {/* <div>💚 Likes: {likedItems.join(",")}</div>
+        <div>💔 Dislikes: {dislikedItems.join(",")}</div> */}
         <div id="game-container"></div>
         {isGameOver && (
           <button
