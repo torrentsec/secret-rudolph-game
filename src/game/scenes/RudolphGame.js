@@ -142,6 +142,7 @@ export class RudolphGame extends Phaser.Scene {
       fill: "#000",
       backgroundColor: "rgba(255, 255, 255, 0.5)",
     });
+    this.scoreText.setDepth(1);
 
     this.remainingTimeText = this.add.text(
       16,
@@ -153,6 +154,7 @@ export class RudolphGame extends Phaser.Scene {
         backgroundColor: "rgba(255, 255, 255, 0.5)",
       }
     );
+    this.remainingTimeText.setDepth(1);
 
     this.startTimer();
   }
