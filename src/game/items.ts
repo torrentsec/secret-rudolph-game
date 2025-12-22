@@ -50,7 +50,7 @@ export interface Item {
 }
 
 export type Items = {
-  [K in ItemKey as Exclude<K, "poo">]: Item;
+  [K in ItemKey]: Item;
 };
 
 export const items: Items = {
@@ -186,10 +186,6 @@ export const items: Items = {
     path: `${PATH}wrapped-gift.svg`,
     name: "gift",
   },
-};
-
-export const itemsIncludingPoop: Items & { poo: Item } = {
-  ...items,
   [itemKeys.POO]: {
     path: `${PATH}poo.svg`,
     name: "poo",

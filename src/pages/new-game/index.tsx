@@ -116,7 +116,7 @@ function GameCreateSteps({ setGameId, setCreatedBy }: Props) {
   const totalSteps = 4;
   const [currentStep, setCurrentStep] = useState(1);
   const isLastStep = useMemo(() => currentStep === totalSteps, [currentStep]);
-  const itemOptions = useMemo(() => items, [items]);
+  const itemOptions: Items = useMemo(() => items, [items]);
   const [selectedLikes, setSelectedLikes] = useState<ItemKey[]>([]);
   const [selectedDislikes, setSelectedDislikes] = useState<ItemKey[]>([]);
   const likeOptions: Partial<Items> = useMemo(() => {

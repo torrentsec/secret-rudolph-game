@@ -9,7 +9,7 @@ import Image from "next/image";
 import StartGame from "./game/main";
 import { EventBus } from "./game/EventBus";
 import { useRouter } from "next/router";
-import { ItemKey, itemsIncludingPoop } from "./game/items";
+import { ItemKey, items } from "./game/items";
 import Help from "@/components/icons/Help";
 import Instructions from "./components/Instructions";
 import { addGameResult } from "./_utils/useFirestore";
@@ -158,7 +158,7 @@ export const PhaserGame = forwardRef<IRefPhaserGame, IProps>(
           💚 Likes:{" "}
           {likedItems.map((itemKey: ItemKey) => (
             <Image
-              src={itemsIncludingPoop[itemKey].path}
+              src={items[itemKey].path}
               width={24}
               height={24}
               alt={itemKey}
@@ -169,7 +169,7 @@ export const PhaserGame = forwardRef<IRefPhaserGame, IProps>(
           💔 Dislikes:{" "}
           {dislikedItems.map((itemKey: ItemKey) => (
             <Image
-              src={itemsIncludingPoop[itemKey].path}
+              src={items[itemKey].path}
               width={24}
               height={24}
               alt={itemKey}
