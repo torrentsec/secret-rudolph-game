@@ -114,9 +114,15 @@ function GameCreateSteps({ setGameId, setCreatedBy }: Props) {
   const totalSteps = 4;
   const [currentStep, setCurrentStep] = useState(1);
   const isLastStep = useMemo(() => currentStep === totalSteps, [currentStep]);
-  const [itemOptions, setItemOptions] = useState(items);
+  const itemOptions = useMemo(() => items, [items]);
   const [selectedLikes, setSelectedLikes] = useState<ItemKey[]>([]);
   const [selectedDislikes, setSelectedDislikes] = useState<ItemKey[]>([]);
+  const likeOptions: Partial<Items> = useMemo(() => {
+    const entries = Object.entries(itemOptions).filter(
+      ([key, _]) => !selectedDislikes.includes(key as ItemKey)
+    );
+    return Object.fromEntries(entries);
+  }, [selectedDislikes, itemOptions]);
   const dislikeOptions: Partial<Items> = useMemo(() => {
     const entries = Object.entries(itemOptions).filter(
       ([key, _]) => !selectedLikes.includes(key as ItemKey)
@@ -261,7 +267,7 @@ function GameCreateSteps({ setGameId, setCreatedBy }: Props) {
           * Select {MIN_LIKES_COUNT} to {MAX_LIKES_COUNT} items
         </p>
         <ul className="grid grid-cols-4 md:grid-cols-5 gap-2 md:gap-3">
-          {Object.entries(itemOptions).map(([itemKey, itemData]) => {
+          {Object.entries(likeOptions).map(([itemKey, itemData]) => {
             return (
               <li
                 className={`col text-center rounded-xl p-2 bg-green-100 text-sm text-black hover:cursor-pointer ${
