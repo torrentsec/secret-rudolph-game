@@ -27,10 +27,6 @@ function App() {
   }, [router]);
 
   useEffect(() => {
-    // const gameData = fetchGameData(gameId);
-    // setGameData(gameData);
-    // setFriendName(gameData.name || "Friend");
-
     initGameSettings(gameId);
   }, [gameId]);
 
@@ -39,7 +35,7 @@ function App() {
       const data = await fetchGame(id);
 
       setGameData(data);
-      setFriendName(data.name || "Friend");
+      setFriendName(data.name || "");
     } catch (err) {
       return {};
     }

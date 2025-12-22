@@ -39,7 +39,7 @@ export const PhaserGame = forwardRef<IRefPhaserGame, IProps>(
 
     const router = useRouter();
 
-    const saveGameResult = (score: number) => {
+    /* const saveGameResult = (score: number) => {
       const data = localStorage.getItem(gameId);
       if (!data) {
         // invalid game!
@@ -55,7 +55,7 @@ export const PhaserGame = forwardRef<IRefPhaserGame, IProps>(
         gameId,
         JSON.stringify({ ...parsed, result: newResult })
       );
-    };
+    }; */
 
     const handleRedirect = () => {
       router.push(`/results?gameId=${gameId}`);
@@ -118,6 +118,9 @@ export const PhaserGame = forwardRef<IRefPhaserGame, IProps>(
           return;
         }
         try {
+          if (!gameId) {
+            return;
+          }
           const newResult = {
             gameCode: gameId,
             data: { player: playerName, score: data.score },
@@ -153,7 +156,15 @@ export const PhaserGame = forwardRef<IRefPhaserGame, IProps>(
           <p aria-label="help-button">Help</p>
           <Help />
         </button>
-        <p>Let's find out what "{friendName}" wants for Christmas!</p>
+        {friendName.length == 0 && (
+          <p className="text-sm p-2 border border-white rounded-xl">
+            ⚠️ Failed to load game with game code '{gameId}'. This is a test
+            game.
+          </p>
+        )}
+        <p>
+          Let's find out what "{friendName || "unknown"}" wants for Christmas!
+        </p>
         <div className="inline-flex gap-1.5">
           💚 Likes:{" "}
           {likedItems.map((itemKey: ItemKey) => (
@@ -176,8 +187,6 @@ export const PhaserGame = forwardRef<IRefPhaserGame, IProps>(
             />
           ))}
         </div>
-        {/* <div>💚 Likes: {likedItems.join(",")}</div>
-        <div>💔 Dislikes: {dislikedItems.join(",")}</div> */}
         <div id="game-container" className="self-center"></div>
         {isGameOver && (
           <button

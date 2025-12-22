@@ -154,7 +154,7 @@ function GameCreateSteps({ setGameId, setCreatedBy }: Props) {
     }
 
     if (currentStep === 1 && nickname.trim().length < 1) {
-      setErrorMessage("Please enter your nickname. (At least 1 character)");
+      setErrorMessage("Please enter a nickname. (At least 1 character)");
       return;
     }
 

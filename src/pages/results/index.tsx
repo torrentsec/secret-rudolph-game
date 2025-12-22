@@ -88,7 +88,9 @@ export default function ResultsPage({}: Props) {
   const handleGameCodeEnter = () => {
     const regex = /^[a-zA-Z0-9]{10}$/;
     if (!regex.test(gameCode.trim())) {
-      setErrorMessage("Enter a valid game code");
+      setErrorMessage(
+        "Enter a valid game code. Go back to the main page and create a new game if you don't have a game code."
+      );
       return;
     }
     setGameCode("");
