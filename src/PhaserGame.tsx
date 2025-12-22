@@ -146,10 +146,10 @@ export const PhaserGame = forwardRef<IRefPhaserGame, IProps>(
         </div>
         {/* <div>💚 Likes: {likedItems.join(",")}</div>
         <div>💔 Dislikes: {dislikedItems.join(",")}</div> */}
-        <div id="game-container"></div>
+        <div id="game-container" className="self-center"></div>
         {isGameOver && (
           <button
-            className="mt-3 p-2 rounded-xl bg-gray-200 hover:bg-green-200 text-green-700 cursor-pointer "
+            className="mt-3 p-2 rounded-xl bg-gray-200 hover:bg-green-200 text-green-700 font-semibold border-2 border-green-700 cursor-pointer"
             onClick={handleRedirect}
           >
             See Results

@@ -84,16 +84,16 @@ function App() {
   return (
     <div id="app">
       {isVisible && (
-        <div className="absolute w-full h-full z-10 bg-black/50 flex justify-center items-center">
+        <div className="absolute w-full z-10 bg-black/50 flex justify-center items-center">
           <div className="bg-white px-5 py-8 rounded-3xl flex flex-col gap-3 text-black w-[350px] h-fit">
-            <label htmlFor="playerName">What is your name?</label>
+            <label htmlFor="playerName">Type in your name:</label>
             <input
               type="text"
               id="playerName"
               name="playerName"
               value={playerName}
               onChange={(e) => setPlayerName(e.target.value)}
-              placeholder="Type in nickname (1-20 characters)"
+              placeholder="Nickname (1-20 characters)"
               maxLength={20}
               className="p-3 bg-white border border-gray-300 rounded-xl"
             />

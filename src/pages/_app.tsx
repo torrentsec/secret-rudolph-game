@@ -21,7 +21,9 @@ export default function App({ Component, pageProps }: AppProps) {
         <link rel="icon" href="/favicon.png" />
       </Head>
       <Header />
-      <main className={`${montserrat.className} `}>
+      <main
+        className={`${montserrat.className} h-auto min-h-[calc(100dvh-64px)] flex flex-col justify-center`}
+      >
         <Component {...pageProps} />
       </main>
       <Footer />

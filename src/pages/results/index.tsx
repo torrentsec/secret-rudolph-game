@@ -94,9 +94,9 @@ export default function ResultsPage({}: Props) {
 
   if (!gameId || typeof gameId !== "string") {
     return (
-      <section className="flex flex-col justify-center items-center mx-auto w-full h-dvh md:w-[50%] p-10 gap-3">
-        <h1 className="text-3xl font-bold text-center">Game Result</h1>
-        <p>Enter your code to check the score board</p>
+      <section className="flex flex-col justify-center gap-3 w-125 max-w-dvw h-auto overflow-y-scroll px-5 mx-auto">
+        <h1 className="text-2xl font-bold text-center">Game Result</h1>
+        <p>Enter your code to check the score board of your game.</p>
         <label htmlFor="gameCode"></label>
         <input
           type="text"
@@ -114,10 +114,11 @@ export default function ResultsPage({}: Props) {
           ⚠️ {errorMessage}
         </p>
         <button
-          className="mt-2 mx-auto cursor-pointer bg-green-700 text-white py-2 px-4 rounded-xl"
+          className="w-1/2 mt-2 mx-auto cursor-pointer bg-green-700 text-white p-3 rounded-xl"
           onClick={handleGameCodeEnter}
         >
-          Enter
+          {/* Enter */}
+          See Results
         </button>
       </section>
     );
@@ -146,7 +147,7 @@ export default function ResultsPage({}: Props) {
 
   return (
     <section className="flex flex-col justify-center items-center mx-auto w-full md:w-[50%] p-10 gap-5">
-      <h1 className="text-3xl font-bold text-center">Game Result</h1>
+      <h1 className="text-2xl font-bold text-center">Game Result</h1>
       <div className="w-full">
         <h2 className="text-xl font-semibold text-center">
           {gameData.name || "User"}'s Wishlist

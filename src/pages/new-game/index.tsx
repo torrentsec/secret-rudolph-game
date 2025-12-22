@@ -47,7 +47,7 @@ function GameCreateSuccess({
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-xl font-bold p-4">
+      <h1 className="text-xl font-bold">
         Congrats, {nickname}! 🎉
         <br />
         Your game has been successfully created!
@@ -70,7 +70,7 @@ function GameCreateSuccess({
         game results.
       </p>
       <div>
-        <div className="my-2 font-semibold">🔗 Share</div>
+        <div className="my-2 font-semibold">🔗 Share link</div>
         <ul className="flex gap-2 flex-wrap">
           {/* <li className="px-3 py-1 rounded-2xl bg-white text-black cursor-pointer">
             Facebook
@@ -84,11 +84,12 @@ function GameCreateSuccess({
           <li className="px-3 py-1 rounded-2xl bg-white text-black cursor-pointer">
             KakaoTalk
           </li> */}
+          <p className="text-sm border border-green-50 rounded-xl p-2 break-all">{`${window.location.origin}/game?gameId=${uniqueId}`}</p>
           <li
-            className="px-3 py-1 rounded-2xl bg-white text-black cursor-pointer"
+            className="text-sm px-3 py-1 rounded-2xl bg-white text-black cursor-pointer"
             onClick={copyLink}
           >
-            Copy link
+            Click to copy
           </li>
         </ul>
       </div>
@@ -416,7 +417,7 @@ export default function NewGame({}: Props) {
   const [createdBy, setCreatedBy] = useState<string>("");
 
   return (
-    <section className="flex flex-col justify-center gap-5 w-125 max-w-dvw h-auto min-h-dvh overflow-y-scroll px-5 py-15 mx-auto">
+    <section className="flex flex-col justify-center gap-5 w-125 max-w-dvw h-auto overflow-y-scroll px-5 py-15 mx-auto">
       {gameId ? (
         <GameCreateSuccess uniqueId={gameId} nickname={createdBy} />
       ) : (
