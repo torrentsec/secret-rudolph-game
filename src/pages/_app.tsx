@@ -1,5 +1,6 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import { Luckiest_Guy, Montserrat, Open_Sans, Roboto } from "next/font/google";
@@ -21,11 +22,13 @@ export default function App({ Component, pageProps }: AppProps) {
         <link rel="icon" href="/favicon.png" />
       </Head>
       <Header />
-      <main
-        className={`${montserrat.className} h-auto min-h-[calc(100dvh-64px)] flex flex-col justify-center`}
-      >
-        <Component {...pageProps} />
-      </main>
+      <ErrorBoundary>
+        <main
+          className={`${montserrat.className} h-auto min-h-[calc(100dvh-64px)] flex flex-col justify-center`}
+        >
+          <Component {...pageProps} />
+        </main>
+      </ErrorBoundary>
       <Footer />
     </>
   );
