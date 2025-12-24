@@ -3,9 +3,9 @@ import { GameObjects, Scene } from "phaser";
 import { EventBus } from "../EventBus";
 
 export class MainMenu extends Scene {
-  background: GameObjects.Image;
-  title: GameObjects.Text;
-  item: GameObjects.Group;
+  background!: GameObjects.Image;
+  title!: GameObjects.Text;
+  item!: GameObjects.Group;
 
   constructor() {
     super("MainMenu");
