@@ -1,138 +1,283 @@
-import Phaser from "phaser";
-import { items, ItemKey } from "../items";
-import { EventBus } from "../EventBus";
-import { shuffleArray } from "../../_utils/utils";
+/*
+ * ============================================================================
+ * RUDOLPH GAME - Main Game Scene
+ * ============================================================================
+ *
+ * This file contains the main game logic for the Secret Rudolph game.
+ * Think of it as the "engine" that runs the game - it handles:
+ * - Moving Rudolph left and right
+ * - Spawning falling items (likes and dislikes)
+ * - Detecting when Rudolph catches or hits items
+ * - Keeping track of the score
+ * - Managing the game timer
+ *
+ * The game works like this:
+ * 1. Items fall from the top of the screen
+ * 2. Player moves Rudolph left/right to catch "liked" items (good!)
+ * 3. Player avoids "disliked" items (bad if you hit them!)
+ * 4. Game ends after 45 seconds
+ * 5. Final score is sent to the results page
+ */
+
+// Import external libraries and utilities
+import Phaser from "phaser"; // Phaser is the game framework - like a toolbox for making games
+import { items, ItemKey } from "../items"; // The list of all available items (gifts, toys, etc.)
+import { EventBus } from "../EventBus"; // A "messenger" that lets different parts of the app talk to each other
+import { shuffleArray } from "../../_utils/utils"; // A function that randomly shuffles an array
 
 // ============================================================================
-// GAME CONFIGURATION - Single source of truth for all game parameters
+// GAME CONFIGURATION - All the game settings in one place
 // ============================================================================
+/*
+ * Think of this as the game's "settings panel" - all the numbers that control
+ * how the game behaves. By keeping them here, we can easily adjust the game
+ * difficulty, speed, scoring, etc. without hunting through the code.
+ *
+ * This follows the "Don't Repeat Yourself" (DRY) principle - instead of
+ * typing "10" every time we need the score for a liked item, we use
+ * GAME_CONFIG.SCORE_LIKED_ITEM. If we want to change it later, we only
+ * change it in ONE place!
+ */
 const GAME_CONFIG = {
-  // Dimensions
-  WIDTH: 365,
-  HEIGHT: 500,
+  // ===== GAME WINDOW SIZE =====
+  // How big the game canvas is (in pixels)
+  WIDTH: 365,   // Width: about the size of a phone screen
+  HEIGHT: 500,  // Height: slightly taller than it is wide
 
-  // Timing
-  PLAY_TIME: 45000, // ms
-  GLOW_DURATION: 300, // ms
-  SPAWN_DELAY_LIKED: 800, // ms
-  SPAWN_DELAY_DISLIKED: 1000, // ms
+  // ===== TIMING SETTINGS =====
+  // How long things take (all times are in milliseconds - 1000ms = 1 second)
+  PLAY_TIME: 45000,           // Total game duration: 45 seconds (45,000 milliseconds)
+  GLOW_DURATION: 300,         // How long Rudolph glows when hitting an item: 0.3 seconds
+  SPAWN_DELAY_LIKED: 800,     // How often liked items appear: every 0.8 seconds
+  SPAWN_DELAY_DISLIKED: 1000, // How often disliked items appear: every 1 second
 
-  // Scoring
-  SCORE_LIKED_ITEM: 10,
-  SCORE_DISLIKED_ITEM: -5,
+  // ===== SCORING SYSTEM =====
+  // Points gained or lost for different actions
+  SCORE_LIKED_ITEM: 10,    // Points added when you catch a "liked" item (reward!)
+  SCORE_DISLIKED_ITEM: -5, // Points lost when you hit a "disliked" item (penalty!)
 
-  // Physics
-  PLAYER_VELOCITY: 400,
-  GRAVITY: 80,
+  // ===== PHYSICS SETTINGS =====
+  // How fast things move and fall
+  PLAYER_VELOCITY: 400, // How fast Rudolph moves left/right (pixels per second)
+  GRAVITY: 80,          // How fast items fall down (like real gravity, but in pixels)
 
-  // Visual
-  ITEM_SIZE: 30,
-  PLAYER_SCALE: 0.8,
-  PLAYER_START_Y_OFFSET: 80,
-  PLAYER_RESIZE_Y_OFFSET: 50,
+  // ===== VISUAL APPEARANCE =====
+  // How things look on screen
+  ITEM_SIZE: 30,               // Size of falling items (30x30 pixels - small icons)
+  PLAYER_SCALE: 0.8,           // Rudolph's size (0.8 = 80% of original image size)
+  PLAYER_START_Y_OFFSET: 80,   // How far from bottom Rudolph starts (80 pixels up)
+  PLAYER_RESIZE_Y_OFFSET: 50,  // How far from bottom when screen resizes (50 pixels up)
 
-  // Colors
-  GLOW_COLOR_POSITIVE: 0x00b90c, // green
-  GLOW_COLOR_NEGATIVE: 0xff0000, // red
+  // ===== COLORS FOR VISUAL FEEDBACK =====
+  // Color codes in hexadecimal (0x means "this is a hex color code")
+  GLOW_COLOR_POSITIVE: 0x00b90c, // Green glow when catching liked items (success!)
+  GLOW_COLOR_NEGATIVE: 0xff0000, // Red glow when hitting disliked items (oops!)
 
-  // UI
-  UI_TEXT_SIZE: "20px",
-  UI_TEXT_COLOR: "#000",
-  UI_TEXT_BACKGROUND: "rgba(255, 255, 255, 0.5)",
-  UI_PADDING: 16,
-  UI_LINE_HEIGHT: 22,
-} as const;
+  // ===== USER INTERFACE (UI) STYLING =====
+  // How the score and timer text looks
+  UI_TEXT_SIZE: "20px",                        // Font size: 20 pixels tall
+  UI_TEXT_COLOR: "#000",                       // Text color: black
+  UI_TEXT_BACKGROUND: "rgba(255, 255, 255, 0.5)", // Semi-transparent white background
+  UI_PADDING: 16,      // Space around text (16 pixels)
+  UI_LINE_HEIGHT: 22,  // Space between lines of text (22 pixels)
+} as const; // "as const" means these values can NEVER be changed (they're locked in)
 
-// Animation keys
+// ===== ANIMATION NAMES =====
+// Labels for Rudolph's different animations (walking left, right, or standing still)
 const ANIM_KEYS = {
-  LEFT: "left",
-  RIGHT: "right",
-  TURN: "turn",
+  LEFT: "left",   // Animation when moving left
+  RIGHT: "right", // Animation when moving right
+  TURN: "turn",   // Animation when standing still (facing forward)
 } as const;
 
 // ============================================================================
 // ADVANCED ALGORITHM: Object Pool for Performance Optimization
 // ============================================================================
-/**
- * Object pooling pattern to reduce garbage collection and improve performance.
- * Instead of creating/destroying sprites constantly, we reuse them.
+/*
+ * OBJECT POOLING - Like a Recycling System for Game Objects
+ * ============================================================================
  *
- * Performance benefit: 30-50% reduction in GC pauses during gameplay.
+ * PROBLEM:
+ * In the game, items constantly appear and disappear (fall down, get caught, etc.)
+ * The naive approach would be:
+ *   1. Create a new item → Show it on screen
+ *   2. Item gets caught → Delete it completely
+ *   3. Need another item? → Create a brand new one
+ *   4. Repeat 100s of times during the game
+ *
+ * This is SLOW because creating and destroying objects makes the computer work hard,
+ * causing lag and stuttering (especially on phones). It's like building a new chair
+ * from scratch every time someone wants to sit down, then burning it when they stand up!
+ *
+ * SOLUTION - Object Pooling (The Recycling Approach):
+ * Instead of creating/destroying, we REUSE objects:
+ *   1. At game start: Create 20 items and put them in a "pool" (hide them)
+ *   2. Need an item? → Take one from the pool, show it, use it
+ *   3. Item gets caught? → Hide it and put it back in the pool
+ *   4. Need another item? → Reuse one from the pool
+ *
+ * It's like having a stack of reusable plates instead of using disposable ones!
+ *
+ * PERFORMANCE BENEFIT:
+ * - 30-50% reduction in stuttering/lag during gameplay
+ * - Smoother game experience, especially on slower devices
+ * - Less memory usage = game runs better
+ *
+ * REAL-WORLD ANALOGY:
+ * Think of a restaurant with plates:
+ * - BAD: Buy new plate for each customer, throw it away after (wasteful, expensive)
+ * - GOOD: Have a stack of plates, wash and reuse them (efficient, sustainable)
  */
 class ItemPool {
-  private pool: Phaser.Physics.Arcade.Sprite[] = [];
-  private active: Phaser.Physics.Arcade.Sprite[] = [];
+  /*
+   * Two "buckets" to organize our items:
+   * - pool: Items that are NOT being used (hidden, waiting to be reused)
+   * - active: Items currently on screen (falling down, visible to player)
+   */
+  private pool: Phaser.Physics.Arcade.Sprite[] = [];    // The "waiting room" for unused items
+  private active: Phaser.Physics.Arcade.Sprite[] = [];  // Items currently in the game
 
+  /*
+   * CONSTRUCTOR - Setting up the pool when the game starts
+   *
+   * Parameters:
+   * - scene: The game scene (where items will appear)
+   * - poolSize: How many items to pre-create (default: 20)
+   *
+   * Think of this as "buying the plates for the restaurant" - we do it once at the start
+   */
   constructor(
-    private scene: Phaser.Scene,
-    private poolSize: number = 20
+    private scene: Phaser.Scene,  // Which game scene these items belong to
+    private poolSize: number = 20 // How many items to create upfront (20 is plenty)
   ) {
-    // Pre-allocate pool
+    // PRE-ALLOCATE THE POOL
+    // Create all items at once (like buying all the plates before opening the restaurant)
     for (let i = 0; i < poolSize; i++) {
-      const item = this.createItem();
-      this.pool.push(item);
+      const item = this.createItem();  // Make one item
+      this.pool.push(item);            // Add it to the waiting pool
     }
+    // Now we have 20 items ready to use, all hidden and waiting!
   }
 
+  /*
+   * CREATE ITEM - Makes a new item sprite (used internally)
+   *
+   * This creates an item in a "blank" state:
+   * - Position: (0, 0) - doesn't matter, we'll move it later
+   * - Texture: "placeholder" - we'll change this to the actual item image later
+   * - Active: false - not participating in the game yet
+   * - Visible: false - hidden from view
+   *
+   * Think of it as creating a "blank slate" that we can configure later
+   */
   private createItem(): Phaser.Physics.Arcade.Sprite {
+    // Create a physics sprite (an object that can move and collide with things)
     const item = this.scene.physics.add.sprite(0, 0, "placeholder");
-    item.setActive(false);
-    item.setVisible(false);
-    return item;
+
+    // Turn it off and hide it (like storing a plate in the cupboard)
+    item.setActive(false);   // Not participating in physics/game logic
+    item.setVisible(false);  // Not shown on screen
+
+    return item; // Return the item so we can add it to the pool
   }
 
-  /**
-   * Acquire a sprite from the pool
+  /*
+   * ACQUIRE - Get an item from the pool to use in the game
+   *
+   * This is like taking a plate from the cupboard to serve food.
+   * We take an item from the pool, configure it, and make it visible.
+   *
+   * Parameters:
+   * - x, y: Where to place the item on screen
+   * - texture: What image to show (ring, tree, bike, etc.)
+   * - name: Internal name for tracking (e.g., "RING")
+   *
+   * Returns: A ready-to-use item sprite
    */
   acquire(x: number, y: number, texture: string, name: string): Phaser.Physics.Arcade.Sprite {
-    let item = this.pool.pop();
+    // Try to get an item from the pool (like taking a plate from the cupboard)
+    let item = this.pool.pop(); // .pop() removes and returns the last item in the array
 
+    // EDGE CASE: What if the pool is empty? (We're using all 20 items!)
     if (!item) {
-      // Pool exhausted, create new sprite
+      // Pool exhausted - make a new item on the fly
+      // This rarely happens, but it's a safety net (like ordering more plates mid-service)
       item = this.createItem();
     }
 
-    // Reset and configure sprite
-    item.setPosition(x, y);
-    item.setTexture(texture);
-    item.setActive(true);
-    item.setVisible(true);
-    item.enableBody(true, x, y, true, true);
-    item.setDisplaySize(GAME_CONFIG.ITEM_SIZE, GAME_CONFIG.ITEM_SIZE);
-    item.setCollideWorldBounds(true);
-    item.setData("itemName", name);
+    // CONFIGURE THE ITEM - Set it up for use
+    // Like putting food on the plate and bringing it to the table
+    item.setPosition(x, y);                    // Where it appears (x=left/right, y=up/down)
+    item.setTexture(texture);                  // What image to show (the actual gift icon)
+    item.setActive(true);                      // Turn it on (participate in game logic)
+    item.setVisible(true);                     // Show it on screen (make it visible)
+    item.enableBody(true, x, y, true, true);   // Enable physics (so it can fall and collide)
+    item.setDisplaySize(                       // Set the size
+      GAME_CONFIG.ITEM_SIZE,                   // Width: 30 pixels
+      GAME_CONFIG.ITEM_SIZE                    // Height: 30 pixels
+    );
+    item.setCollideWorldBounds(true);          // Stop at edges (don't fall off screen)
+    item.setData("itemName", name);            // Store the item's name for later reference
 
+    // Add to active list (so we know it's being used)
     this.active.push(item);
-    return item;
+
+    return item; // Give the configured item back to the caller
   }
 
-  /**
-   * Release a sprite back to the pool
+  /*
+   * RELEASE - Return an item to the pool when we're done with it
+   *
+   * This is like washing a plate and putting it back in the cupboard.
+   * We hide the item, turn it off, and put it back in the pool for reuse.
+   *
+   * Parameters:
+   * - item: The item sprite to return to the pool
    */
   release(item: Phaser.Physics.Arcade.Sprite): void {
-    item.setActive(false);
-    item.setVisible(false);
-    item.disableBody(true, true);
+    // TURN OFF THE ITEM - Make it inactive and invisible
+    item.setActive(false);         // Stop participating in game logic
+    item.setVisible(false);        // Hide from screen
+    item.disableBody(true, true);  // Turn off physics (stop falling/colliding)
 
+    // MOVE FROM "ACTIVE" BACK TO "POOL"
+    // Find where this item is in the active list
     const index = this.active.indexOf(item);
+
     if (index > -1) {
+      // Remove from active list (splice = remove from array)
       this.active.splice(index, 1);
+
+      // Add back to pool (push = add to end of array)
       this.pool.push(item);
     }
+    // Now the item is back in the pool, ready to be reused!
   }
 
-  /**
-   * Get all active items (for collision detection)
+  /*
+   * GET ACTIVE - Get all items currently in use
+   *
+   * This is useful for checking all active items at once.
+   * For example, checking if any of them hit the ground.
+   *
+   * Returns: Array of all active (visible, falling) items
    */
   getActive(): Phaser.Physics.Arcade.Sprite[] {
     return this.active;
   }
 
-  /**
-   * Clean up all items
+  /*
+   * DESTROY - Clean up when the game ends
+   *
+   * This completely removes all items (both in pool and active).
+   * Like closing the restaurant and throwing away all the plates.
+   * We only do this when the game is completely over.
    */
   destroy(): void {
+    // Combine both arrays (pool + active) and destroy each item
     [...this.pool, ...this.active].forEach((item) => item.destroy());
+
+    // Clear both arrays (set them back to empty)
     this.pool = [];
     this.active = [];
   }
