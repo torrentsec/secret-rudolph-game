@@ -12,29 +12,25 @@
  * 3. shuffleArray - Fisher-Yates shuffle algorithm
  */
 
-import {
-  generateUniqueHash,
-  generateSecureRandomInt,
-  shuffleArray,
-} from './utils';
+import { generateUniqueHash, generateSecureRandomInt, shuffleArray } from "./utils";
 
 // ============================================================================
 // TESTS FOR generateUniqueHash
 // ============================================================================
 
-describe('generateUniqueHash', () => {
+describe("generateUniqueHash", () => {
   /*
    * TEST 1: Basic functionality - does it return a string?
    */
-  it('should return a string', () => {
+  it("should return a string", () => {
     const result = generateUniqueHash();
-    expect(typeof result).toBe('string');
+    expect(typeof result).toBe("string");
   });
 
   /*
    * TEST 2: Default length - should be 10 characters
    */
-  it('should return a string of default length 10', () => {
+  it("should return a string of default length 10", () => {
     const result = generateUniqueHash();
     expect(result.length).toBe(10);
   });
@@ -42,7 +38,7 @@ describe('generateUniqueHash', () => {
   /*
    * TEST 3: Custom length - should respect the length parameter
    */
-  it('should return a string of specified length', () => {
+  it("should return a string of specified length", () => {
     expect(generateUniqueHash(5).length).toBe(5);
     expect(generateUniqueHash(20).length).toBe(20);
     expect(generateUniqueHash(50).length).toBe(50);
@@ -51,7 +47,7 @@ describe('generateUniqueHash', () => {
   /*
    * TEST 4: Character set - should only use alphanumeric characters
    */
-  it('should only contain alphanumeric characters (A-Z, a-z, 0-9)', () => {
+  it("should only contain alphanumeric characters (A-Z, a-z, 0-9)", () => {
     const result = generateUniqueHash(100); // Generate a long string for better coverage
     const validCharRegex = /^[A-Za-z0-9]+$/;
     expect(validCharRegex.test(result)).toBe(true);
@@ -60,7 +56,7 @@ describe('generateUniqueHash', () => {
   /*
    * TEST 5: Uniqueness - should generate different codes each time
    */
-  it('should generate unique codes (very high probability)', () => {
+  it("should generate unique codes (very high probability)", () => {
     const codes = new Set();
     const iterations = 1000;
 
@@ -76,9 +72,8 @@ describe('generateUniqueHash', () => {
    * TEST 6: Statistical uniformity - characters should be evenly distributed
    * This tests that the rejection sampling algorithm works correctly
    */
-  it('should have roughly uniform character distribution', () => {
-    const chars =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  it("should have roughly uniform character distribution", () => {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     const charCounts: { [key: string]: number } = {};
 
     // Initialize counts for all characters
@@ -90,7 +85,7 @@ describe('generateUniqueHash', () => {
     const iterations = 10000;
     for (let i = 0; i < iterations; i++) {
       const hash = generateUniqueHash(1);
-      charCounts[hash]++;
+      charCounts[hash]!++;
     }
 
     // Calculate expected frequency (should be close to iterations / 62)
@@ -100,22 +95,21 @@ describe('generateUniqueHash', () => {
     // Check that each character appears roughly the expected number of times
     let deviationsWithinTolerance = 0;
     for (const char of chars) {
-      const deviation = Math.abs(charCounts[char] - expectedFrequency);
+      const deviation = Math.abs(charCounts[char]! - expectedFrequency);
       if (deviation <= tolerance) {
         deviationsWithinTolerance++;
       }
     }
 
     // At least 95% of characters should be within tolerance (statistical test)
-    const percentageWithinTolerance =
-      (deviationsWithinTolerance / chars.length) * 100;
+    const percentageWithinTolerance = (deviationsWithinTolerance / chars.length) * 100;
     expect(percentageWithinTolerance).toBeGreaterThanOrEqual(90);
   });
 
   /*
    * TEST 7: Edge case - very long codes
    */
-  it('should handle generating very long codes', () => {
+  it("should handle generating very long codes", () => {
     const result = generateUniqueHash(500);
     expect(result.length).toBe(500);
     expect(/^[A-Za-z0-9]+$/.test(result)).toBe(true);
@@ -124,7 +118,7 @@ describe('generateUniqueHash', () => {
   /*
    * TEST 8: Edge case - single character code
    */
-  it('should handle generating single character codes', () => {
+  it("should handle generating single character codes", () => {
     const result = generateUniqueHash(1);
     expect(result.length).toBe(1);
     expect(/^[A-Za-z0-9]$/.test(result)).toBe(true);
@@ -135,19 +129,19 @@ describe('generateUniqueHash', () => {
 // TESTS FOR generateSecureRandomInt
 // ============================================================================
 
-describe('generateSecureRandomInt', () => {
+describe("generateSecureRandomInt", () => {
   /*
    * TEST 1: Basic functionality - returns a number
    */
-  it('should return a number', () => {
+  it("should return a number", () => {
     const result = generateSecureRandomInt(1, 10);
-    expect(typeof result).toBe('number');
+    expect(typeof result).toBe("number");
   });
 
   /*
    * TEST 2: Range - should return value within [min, max]
    */
-  it('should return a number within the specified range (inclusive)', () => {
+  it("should return a number within the specified range (inclusive)", () => {
     const min = 5;
     const max = 15;
     const iterations = 1000;
@@ -162,7 +156,7 @@ describe('generateSecureRandomInt', () => {
   /*
    * TEST 3: Integer check - should return whole numbers only
    */
-  it('should return integers only (no decimals)', () => {
+  it("should return integers only (no decimals)", () => {
     const iterations = 1000;
 
     for (let i = 0; i < iterations; i++) {
@@ -174,7 +168,7 @@ describe('generateSecureRandomInt', () => {
   /*
    * TEST 4: Single value range - min === max
    */
-  it('should handle single value range (min === max)', () => {
+  it("should handle single value range (min === max)", () => {
     const result = generateSecureRandomInt(42, 42);
     expect(result).toBe(42);
   });
@@ -182,7 +176,7 @@ describe('generateSecureRandomInt', () => {
   /*
    * TEST 5: Coverage - should eventually hit both min and max
    */
-  it('should eventually generate both min and max values', () => {
+  it("should eventually generate both min and max values", () => {
     const min = 1;
     const max = 5;
     const results = new Set<number>();
@@ -203,7 +197,7 @@ describe('generateSecureRandomInt', () => {
    * TEST 6: Statistical uniformity - values should be evenly distributed
    * This tests that the rejection sampling eliminates modulo bias
    */
-  it('should have roughly uniform distribution (no modulo bias)', () => {
+  it("should have roughly uniform distribution (no modulo bias)", () => {
     const min = 0;
     const max = 9;
     const counts: { [key: number]: number } = {};
@@ -217,7 +211,7 @@ describe('generateSecureRandomInt', () => {
     const iterations = 10000;
     for (let i = 0; i < iterations; i++) {
       const num = generateSecureRandomInt(min, max);
-      counts[num]++;
+      counts[num]!++;
     }
 
     // Expected frequency for each number
@@ -226,7 +220,7 @@ describe('generateSecureRandomInt', () => {
 
     // Check distribution
     for (let i = min; i <= max; i++) {
-      const deviation = Math.abs(counts[i] - expectedFrequency);
+      const deviation = Math.abs(counts[i]! - expectedFrequency);
       expect(deviation).toBeLessThan(tolerance);
     }
   });
@@ -234,7 +228,7 @@ describe('generateSecureRandomInt', () => {
   /*
    * TEST 7: Large range
    */
-  it('should handle large ranges', () => {
+  it("should handle large ranges", () => {
     const min = 1;
     const max = 1000000;
     const result = generateSecureRandomInt(min, max);
@@ -247,7 +241,7 @@ describe('generateSecureRandomInt', () => {
   /*
    * TEST 8: Negative ranges
    */
-  it('should handle negative number ranges', () => {
+  it("should handle negative number ranges", () => {
     const min = -10;
     const max = -1;
     const iterations = 100;
@@ -263,7 +257,7 @@ describe('generateSecureRandomInt', () => {
   /*
    * TEST 9: Range spanning negative and positive
    */
-  it('should handle ranges spanning negative and positive numbers', () => {
+  it("should handle ranges spanning negative and positive numbers", () => {
     const min = -5;
     const max = 5;
     const iterations = 100;
@@ -281,11 +275,11 @@ describe('generateSecureRandomInt', () => {
 // TESTS FOR shuffleArray
 // ============================================================================
 
-describe('shuffleArray', () => {
+describe("shuffleArray", () => {
   /*
    * TEST 1: Basic functionality - returns an array
    */
-  it('should return an array', () => {
+  it("should return an array", () => {
     const input = [1, 2, 3, 4, 5];
     const result = shuffleArray(input);
     expect(Array.isArray(result)).toBe(true);
@@ -294,7 +288,7 @@ describe('shuffleArray', () => {
   /*
    * TEST 2: Length preservation - should maintain array length
    */
-  it('should return an array of the same length', () => {
+  it("should return an array of the same length", () => {
     const input = [1, 2, 3, 4, 5];
     const result = shuffleArray(input);
     expect(result.length).toBe(input.length);
@@ -303,7 +297,7 @@ describe('shuffleArray', () => {
   /*
    * TEST 3: Element preservation - should contain all original elements
    */
-  it('should contain all original elements', () => {
+  it("should contain all original elements", () => {
     const input = [1, 2, 3, 4, 5];
     const result = shuffleArray(input);
 
@@ -317,7 +311,7 @@ describe('shuffleArray', () => {
   /*
    * TEST 4: Immutability - should not modify the original array
    */
-  it('should not modify the original array', () => {
+  it("should not modify the original array", () => {
     const input = [1, 2, 3, 4, 5];
     const originalCopy = [...input];
 
@@ -329,7 +323,7 @@ describe('shuffleArray', () => {
   /*
    * TEST 5: Randomness - should shuffle (not always return same order)
    */
-  it('should actually shuffle (not always return same order)', () => {
+  it("should actually shuffle (not always return same order)", () => {
     const input = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     let changedCount = 0;
     const iterations = 100;
@@ -349,7 +343,7 @@ describe('shuffleArray', () => {
   /*
    * TEST 6: Empty array
    */
-  it('should handle empty arrays', () => {
+  it("should handle empty arrays", () => {
     const input: number[] = [];
     const result = shuffleArray(input);
     expect(result).toEqual([]);
@@ -358,7 +352,7 @@ describe('shuffleArray', () => {
   /*
    * TEST 7: Single element array
    */
-  it('should handle single element arrays', () => {
+  it("should handle single element arrays", () => {
     const input = [42];
     const result = shuffleArray(input);
     expect(result).toEqual([42]);
@@ -367,7 +361,7 @@ describe('shuffleArray', () => {
   /*
    * TEST 8: Two element array - should eventually produce both permutations
    */
-  it('should produce both permutations for a two-element array', () => {
+  it("should produce both permutations for a two-element array", () => {
     const input = [1, 2];
     const permutations = new Set<string>();
     const maxIterations = 100;
@@ -377,28 +371,28 @@ describe('shuffleArray', () => {
       permutations.add(JSON.stringify(result));
 
       // If we've seen both permutations, test passed
-      if (permutations.has('[1,2]') && permutations.has('[2,1]')) {
+      if (permutations.has("[1,2]") && permutations.has("[2,1]")) {
         break;
       }
     }
 
     expect(permutations.size).toBe(2);
-    expect(permutations.has('[1,2]')).toBe(true);
-    expect(permutations.has('[2,1]')).toBe(true);
+    expect(permutations.has("[1,2]")).toBe(true);
+    expect(permutations.has("[2,1]")).toBe(true);
   });
 
   /*
    * TEST 9: Works with different data types
    */
-  it('should work with strings', () => {
-    const input = ['a', 'b', 'c', 'd'];
+  it("should work with strings", () => {
+    const input = ["a", "b", "c", "d"];
     const result = shuffleArray(input);
 
     expect(result.length).toBe(4);
-    expect(result.sort()).toEqual(['a', 'b', 'c', 'd']);
+    expect(result.sort()).toEqual(["a", "b", "c", "d"]);
   });
 
-  it('should work with objects', () => {
+  it("should work with objects", () => {
     const input = [{ id: 1 }, { id: 2 }, { id: 3 }];
     const result = shuffleArray(input);
 
@@ -411,7 +405,7 @@ describe('shuffleArray', () => {
    * For a 3-element array, there are 3! = 6 possible permutations
    * Fisher-Yates guarantees each permutation has probability 1/6
    */
-  it('should produce roughly uniform distribution of permutations', () => {
+  it("should produce roughly uniform distribution of permutations", () => {
     const input = [1, 2, 3];
     const permutationCounts: { [key: string]: number } = {};
     const iterations = 6000; // 1000 per expected permutation
