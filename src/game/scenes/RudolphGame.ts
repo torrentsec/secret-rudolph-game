@@ -252,8 +252,8 @@ export class RudolphGame extends Phaser.Scene {
   // ==========================================================================
 
   private collectLikedItem(
-    player: Phaser.Types.Physics.Arcade.GameObjectWithBody,
-    item: Phaser.Types.Physics.Arcade.GameObjectWithBody
+    player: Phaser.Physics.Arcade.Body | Phaser.Physics.Arcade.StaticBody | Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
+    item: Phaser.Physics.Arcade.Body | Phaser.Physics.Arcade.StaticBody | Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
   ): void {
     const sprite = item as Phaser.Physics.Arcade.Sprite;
     const itemName = sprite.getData("itemName");
@@ -273,8 +273,8 @@ export class RudolphGame extends Phaser.Scene {
   }
 
   private hitDislikedItem(
-    player: Phaser.Types.Physics.Arcade.GameObjectWithBody,
-    item: Phaser.Types.Physics.Arcade.GameObjectWithBody
+    player: Phaser.Physics.Arcade.Body | Phaser.Physics.Arcade.StaticBody | Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
+    item: Phaser.Physics.Arcade.Body | Phaser.Physics.Arcade.StaticBody | Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
   ): void {
     const sprite = item as Phaser.Physics.Arcade.Sprite;
     const itemName = sprite.getData("itemName");
@@ -294,8 +294,8 @@ export class RudolphGame extends Phaser.Scene {
   }
 
   private itemHitsPlatform(
-    platform: Phaser.Types.Physics.Arcade.GameObjectWithBody,
-    item: Phaser.Types.Physics.Arcade.GameObjectWithBody
+    platform: Phaser.Physics.Arcade.Body | Phaser.Physics.Arcade.StaticBody | Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
+    item: Phaser.Physics.Arcade.Body | Phaser.Physics.Arcade.StaticBody | Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
   ): void {
     const sprite = item as Phaser.Physics.Arcade.Sprite;
 
