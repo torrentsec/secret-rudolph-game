@@ -3,7 +3,22 @@
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
+
+    /* Type Checking - Strict Mode (Already enabled) */
     "strict": true,
+
+    /* Additional Safety Checks - Enabled */
+    "noUncheckedIndexedAccess": true,
+    "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true,
+
+    /* Future Improvements - Enable these incrementally after fixing existing code:
+     * "noImplicitOverride": true,       // Requires adding 'override' keywords to Phaser scenes
+     * "noUnusedLocals": true,            // Requires cleanup of unused variables (~10 occurrences)
+     * "noUnusedParameters": true,        // Requires parameter cleanup or underscore prefix
+     * "exactOptionalPropertyTypes": true // Requires fixing optional property types
+     */
+
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
@@ -13,7 +28,6 @@
     "jsx": "preserve",
     "incremental": true,
     "allowImportingTsExtensions": true,
-    "strictPropertyInitialization": false,
     "paths": {
       "@/*": ["./src/*"]
     },
