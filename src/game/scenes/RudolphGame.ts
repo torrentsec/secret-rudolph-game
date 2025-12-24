@@ -41,32 +41,32 @@ import { shuffleArray } from "../../_utils/utils"; // A function that randomly s
 const GAME_CONFIG = {
   // ===== GAME WINDOW SIZE =====
   // How big the game canvas is (in pixels)
-  WIDTH: 365,   // Width: about the size of a phone screen
-  HEIGHT: 500,  // Height: slightly taller than it is wide
+  WIDTH: 365, // Width: about the size of a phone screen
+  HEIGHT: 500, // Height: slightly taller than it is wide
 
   // ===== TIMING SETTINGS =====
   // How long things take (all times are in milliseconds - 1000ms = 1 second)
-  PLAY_TIME: 45000,           // Total game duration: 45 seconds (45,000 milliseconds)
-  GLOW_DURATION: 300,         // How long Rudolph glows when hitting an item: 0.3 seconds
-  SPAWN_DELAY_LIKED: 800,     // How often liked items appear: every 0.8 seconds
+  PLAY_TIME: 45000, // Total game duration: 45 seconds (45,000 milliseconds)
+  GLOW_DURATION: 300, // How long Rudolph glows when hitting an item: 0.3 seconds
+  SPAWN_DELAY_LIKED: 800, // How often liked items appear: every 0.8 seconds
   SPAWN_DELAY_DISLIKED: 1000, // How often disliked items appear: every 1 second
 
   // ===== SCORING SYSTEM =====
   // Points gained or lost for different actions
-  SCORE_LIKED_ITEM: 10,    // Points added when you catch a "liked" item (reward!)
+  SCORE_LIKED_ITEM: 10, // Points added when you catch a "liked" item (reward!)
   SCORE_DISLIKED_ITEM: -5, // Points lost when you hit a "disliked" item (penalty!)
 
   // ===== PHYSICS SETTINGS =====
   // How fast things move and fall
   PLAYER_VELOCITY: 400, // How fast Rudolph moves left/right (pixels per second)
-  GRAVITY: 80,          // How fast items fall down (like real gravity, but in pixels)
+  GRAVITY: 80, // How fast items fall down (like real gravity, but in pixels)
 
   // ===== VISUAL APPEARANCE =====
   // How things look on screen
-  ITEM_SIZE: 30,               // Size of falling items (30x30 pixels - small icons)
-  PLAYER_SCALE: 0.8,           // Rudolph's size (0.8 = 80% of original image size)
-  PLAYER_START_Y_OFFSET: 80,   // How far from bottom Rudolph starts (80 pixels up)
-  PLAYER_RESIZE_Y_OFFSET: 50,  // How far from bottom when screen resizes (50 pixels up)
+  ITEM_SIZE: 30, // Size of falling items (30x30 pixels - small icons)
+  PLAYER_SCALE: 0.8, // Rudolph's size (0.8 = 80% of original image size)
+  PLAYER_START_Y_OFFSET: 80, // How far from bottom Rudolph starts (80 pixels up)
+  PLAYER_RESIZE_Y_OFFSET: 50, // How far from bottom when screen resizes (50 pixels up)
 
   // ===== COLORS FOR VISUAL FEEDBACK =====
   // Color codes in hexadecimal (0x means "this is a hex color code")
@@ -75,19 +75,19 @@ const GAME_CONFIG = {
 
   // ===== USER INTERFACE (UI) STYLING =====
   // How the score and timer text looks
-  UI_TEXT_SIZE: "20px",                        // Font size: 20 pixels tall
-  UI_TEXT_COLOR: "#000",                       // Text color: black
+  UI_TEXT_SIZE: "20px", // Font size: 20 pixels tall
+  UI_TEXT_COLOR: "#000", // Text color: black
   UI_TEXT_BACKGROUND: "rgba(255, 255, 255, 0.5)", // Semi-transparent white background
-  UI_PADDING: 16,      // Space around text (16 pixels)
-  UI_LINE_HEIGHT: 22,  // Space between lines of text (22 pixels)
+  UI_PADDING: 16, // Space around text (16 pixels)
+  UI_LINE_HEIGHT: 22, // Space between lines of text (22 pixels)
 } as const; // "as const" means these values can NEVER be changed (they're locked in)
 
 // ===== ANIMATION NAMES =====
 // Labels for Rudolph's different animations (walking left, right, or standing still)
 const ANIM_KEYS = {
-  LEFT: "left",   // Animation when moving left
+  LEFT: "left", // Animation when moving left
   RIGHT: "right", // Animation when moving right
-  TURN: "turn",   // Animation when standing still (facing forward)
+  TURN: "turn", // Animation when standing still (facing forward)
 } as const;
 
 // ============================================================================
@@ -134,8 +134,8 @@ class ItemPool {
    * - pool: Items that are NOT being used (hidden, waiting to be reused)
    * - active: Items currently on screen (falling down, visible to player)
    */
-  private pool: Phaser.Physics.Arcade.Sprite[] = [];    // The "waiting room" for unused items
-  private active: Phaser.Physics.Arcade.Sprite[] = [];  // Items currently in the game
+  private pool: Phaser.Physics.Arcade.Sprite[] = []; // The "waiting room" for unused items
+  private active: Phaser.Physics.Arcade.Sprite[] = []; // Items currently in the game
 
   /*
    * CONSTRUCTOR - Setting up the pool when the game starts
@@ -147,14 +147,14 @@ class ItemPool {
    * Think of this as "buying the plates for the restaurant" - we do it once at the start
    */
   constructor(
-    private scene: Phaser.Scene,  // Which game scene these items belong to
+    private scene: Phaser.Scene, // Which game scene these items belong to
     private poolSize: number = 20 // How many items to create upfront (20 is plenty)
   ) {
     // PRE-ALLOCATE THE POOL
     // Create all items at once (like buying all the plates before opening the restaurant)
     for (let i = 0; i < poolSize; i++) {
-      const item = this.createItem();  // Make one item
-      this.pool.push(item);            // Add it to the waiting pool
+      const item = this.createItem(); // Make one item
+      this.pool.push(item); // Add it to the waiting pool
     }
     // Now we have 20 items ready to use, all hidden and waiting!
   }
@@ -175,8 +175,8 @@ class ItemPool {
     const item = this.scene.physics.add.sprite(0, 0, "placeholder");
 
     // Turn it off and hide it (like storing a plate in the cupboard)
-    item.setActive(false);   // Not participating in physics/game logic
-    item.setVisible(false);  // Not shown on screen
+    item.setActive(false); // Not participating in physics/game logic
+    item.setVisible(false); // Not shown on screen
 
     return item; // Return the item so we can add it to the pool
   }
@@ -207,17 +207,18 @@ class ItemPool {
 
     // CONFIGURE THE ITEM - Set it up for use
     // Like putting food on the plate and bringing it to the table
-    item.setPosition(x, y);                    // Where it appears (x=left/right, y=up/down)
-    item.setTexture(texture);                  // What image to show (the actual gift icon)
-    item.setActive(true);                      // Turn it on (participate in game logic)
-    item.setVisible(true);                     // Show it on screen (make it visible)
-    item.enableBody(true, x, y, true, true);   // Enable physics (so it can fall and collide)
-    item.setDisplaySize(                       // Set the size
-      GAME_CONFIG.ITEM_SIZE,                   // Width: 30 pixels
-      GAME_CONFIG.ITEM_SIZE                    // Height: 30 pixels
+    item.setPosition(x, y); // Where it appears (x=left/right, y=up/down)
+    item.setTexture(texture); // What image to show (the actual gift icon)
+    item.setActive(true); // Turn it on (participate in game logic)
+    item.setVisible(true); // Show it on screen (make it visible)
+    item.enableBody(true, x, y, true, true); // Enable physics (so it can fall and collide)
+    item.setDisplaySize(
+      // Set the size
+      GAME_CONFIG.ITEM_SIZE, // Width: 30 pixels
+      GAME_CONFIG.ITEM_SIZE // Height: 30 pixels
     );
-    item.setCollideWorldBounds(true);          // Stop at edges (don't fall off screen)
-    item.setData("itemName", name);            // Store the item's name for later reference
+    item.setCollideWorldBounds(true); // Stop at edges (don't fall off screen)
+    item.setData("itemName", name); // Store the item's name for later reference
 
     // Add to active list (so we know it's being used)
     this.active.push(item);
@@ -236,9 +237,9 @@ class ItemPool {
    */
   release(item: Phaser.Physics.Arcade.Sprite): void {
     // TURN OFF THE ITEM - Make it inactive and invisible
-    item.setActive(false);         // Stop participating in game logic
-    item.setVisible(false);        // Hide from screen
-    item.disableBody(true, true);  // Turn off physics (stop falling/colliding)
+    item.setActive(false); // Stop participating in game logic
+    item.setVisible(false); // Hide from screen
+    item.disableBody(true, true); // Turn off physics (stop falling/colliding)
 
     // MOVE FROM "ACTIVE" BACK TO "POOL"
     // Find where this item is in the active list
@@ -354,7 +355,9 @@ export class RudolphGame extends Phaser.Scene {
    * distribution. We cycle through shuffled array and reshuffle when exhausted.
    */
   private getNextLikedItem(): ItemKey {
-    const item = this.shuffledLikedItems[this.likedItemIndex];
+    // TypeScript strict mode: array access could be undefined, but we know it's not
+    // because arrays are populated in create() and never empty
+    const item = this.shuffledLikedItems[this.likedItemIndex]!;
     this.likedItemIndex = (this.likedItemIndex + 1) % this.shuffledLikedItems.length;
 
     // Reshuffle when we've cycled through all items
@@ -366,7 +369,9 @@ export class RudolphGame extends Phaser.Scene {
   }
 
   private getNextDislikedItem(): ItemKey {
-    const item = this.shuffledDislikedItems[this.dislikedItemIndex];
+    // TypeScript strict mode: array access could be undefined, but we know it's not
+    // because arrays are populated in create() and never empty
+    const item = this.shuffledDislikedItems[this.dislikedItemIndex]!;
     this.dislikedItemIndex = (this.dislikedItemIndex + 1) % this.shuffledDislikedItems.length;
 
     if (this.dislikedItemIndex === 0) {
@@ -397,8 +402,16 @@ export class RudolphGame extends Phaser.Scene {
   // ==========================================================================
 
   private collectLikedItem(
-    player: Phaser.Physics.Arcade.Body | Phaser.Physics.Arcade.StaticBody | Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
-    item: Phaser.Physics.Arcade.Body | Phaser.Physics.Arcade.StaticBody | Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
+    player:
+      | Phaser.Physics.Arcade.Body
+      | Phaser.Physics.Arcade.StaticBody
+      | Phaser.Types.Physics.Arcade.GameObjectWithBody
+      | Phaser.Tilemaps.Tile,
+    item:
+      | Phaser.Physics.Arcade.Body
+      | Phaser.Physics.Arcade.StaticBody
+      | Phaser.Types.Physics.Arcade.GameObjectWithBody
+      | Phaser.Tilemaps.Tile
   ): void {
     const sprite = item as Phaser.Physics.Arcade.Sprite;
     const itemName = sprite.getData("itemName");
@@ -418,8 +431,16 @@ export class RudolphGame extends Phaser.Scene {
   }
 
   private hitDislikedItem(
-    player: Phaser.Physics.Arcade.Body | Phaser.Physics.Arcade.StaticBody | Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
-    item: Phaser.Physics.Arcade.Body | Phaser.Physics.Arcade.StaticBody | Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
+    player:
+      | Phaser.Physics.Arcade.Body
+      | Phaser.Physics.Arcade.StaticBody
+      | Phaser.Types.Physics.Arcade.GameObjectWithBody
+      | Phaser.Tilemaps.Tile,
+    item:
+      | Phaser.Physics.Arcade.Body
+      | Phaser.Physics.Arcade.StaticBody
+      | Phaser.Types.Physics.Arcade.GameObjectWithBody
+      | Phaser.Tilemaps.Tile
   ): void {
     const sprite = item as Phaser.Physics.Arcade.Sprite;
     const itemName = sprite.getData("itemName");
@@ -439,8 +460,16 @@ export class RudolphGame extends Phaser.Scene {
   }
 
   private itemHitsPlatform(
-    platform: Phaser.Physics.Arcade.Body | Phaser.Physics.Arcade.StaticBody | Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile,
-    item: Phaser.Physics.Arcade.Body | Phaser.Physics.Arcade.StaticBody | Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
+    platform:
+      | Phaser.Physics.Arcade.Body
+      | Phaser.Physics.Arcade.StaticBody
+      | Phaser.Types.Physics.Arcade.GameObjectWithBody
+      | Phaser.Tilemaps.Tile,
+    item:
+      | Phaser.Physics.Arcade.Body
+      | Phaser.Physics.Arcade.StaticBody
+      | Phaser.Types.Physics.Arcade.GameObjectWithBody
+      | Phaser.Tilemaps.Tile
   ): void {
     const sprite = item as Phaser.Physics.Arcade.Sprite;
 
@@ -539,16 +568,11 @@ export class RudolphGame extends Phaser.Scene {
     });
 
     // Setup UI
-    this.scoreText = this.add.text(
-      GAME_CONFIG.UI_PADDING,
-      GAME_CONFIG.UI_PADDING,
-      "Score: 0",
-      {
-        fontSize: GAME_CONFIG.UI_TEXT_SIZE,
-        color: GAME_CONFIG.UI_TEXT_COLOR,
-        backgroundColor: GAME_CONFIG.UI_TEXT_BACKGROUND,
-      }
-    );
+    this.scoreText = this.add.text(GAME_CONFIG.UI_PADDING, GAME_CONFIG.UI_PADDING, "Score: 0", {
+      fontSize: GAME_CONFIG.UI_TEXT_SIZE,
+      color: GAME_CONFIG.UI_TEXT_COLOR,
+      backgroundColor: GAME_CONFIG.UI_TEXT_BACKGROUND,
+    });
     this.scoreText.setDepth(1);
 
     const initialTimeSeconds = Math.ceil(GAME_CONFIG.PLAY_TIME / 1000);
@@ -596,9 +620,7 @@ export class RudolphGame extends Phaser.Scene {
 
     // Platforms
     this.platforms = this.physics.add.staticGroup();
-    this.platforms
-      .create(GAME_CONFIG.WIDTH / 2, GAME_CONFIG.HEIGHT, "snow-ground")
-      .refreshBody();
+    this.platforms.create(GAME_CONFIG.WIDTH / 2, GAME_CONFIG.HEIGHT, "snow-ground").refreshBody();
 
     // Player
     this.player = this.physics.add.sprite(
@@ -688,10 +710,7 @@ export class RudolphGame extends Phaser.Scene {
 
     if (width !== this.lastViewportWidth || height !== this.lastViewportHeight) {
       if (width < GAME_CONFIG.WIDTH) {
-        this.scale.setGameSize(
-          width,
-          width * (GAME_CONFIG.HEIGHT / GAME_CONFIG.WIDTH)
-        );
+        this.scale.setGameSize(width, width * (GAME_CONFIG.HEIGHT / GAME_CONFIG.WIDTH));
         this.background.setPosition(width / 2, height / 2);
         this.background.setDisplaySize(width, height);
         this.platforms.setXY(width / 2, height);
@@ -710,13 +729,11 @@ export class RudolphGame extends Phaser.Scene {
     // Input handling
     const isMovingLeft =
       this.leftKey.isDown ||
-      (this.input.activePointer.isDown &&
-        this.input.activePointer.x < GAME_CONFIG.WIDTH / 2);
+      (this.input.activePointer.isDown && this.input.activePointer.x < GAME_CONFIG.WIDTH / 2);
 
     const isMovingRight =
       this.rightKey.isDown ||
-      (this.input.activePointer.isDown &&
-        this.input.activePointer.x >= GAME_CONFIG.WIDTH / 2);
+      (this.input.activePointer.isDown && this.input.activePointer.x >= GAME_CONFIG.WIDTH / 2);
 
     if (isMovingLeft) {
       this.player.setVelocityX(-GAME_CONFIG.PLAYER_VELOCITY);
