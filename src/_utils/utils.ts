@@ -70,8 +70,7 @@ export function generateUniqueHash(length = 10): string {
   // STEP 1: Define our character set (alphabet)
   // These are all the characters we can use in the game code
   // 26 uppercase (A-Z) + 26 lowercase (a-z) + 10 digits (0-9) = 62 total characters
-  const chars =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   const charsLength = chars.length; // Store length (62) for calculations
 
   // STEP 2: Calculate the "safe zone" - values we can use without bias
@@ -85,7 +84,7 @@ export function generateUniqueHash(length = 10): string {
   // For 62 characters: maxValid = 248
 
   // STEP 3: Prepare variables for the generation loop
-  let result = ''; // This will build up our final code, starting empty
+  let result = ""; // This will build up our final code, starting empty
 
   // Create a buffer (storage space) for random numbers
   // We request length * 2 bytes (extra, in case some get rejected)
@@ -101,14 +100,18 @@ export function generateUniqueHash(length = 10): string {
 
     // Look through each random byte we got
     for (let i = 0; i < randomBytes.length && result.length < length; i++) {
+      // Get the byte value (TypeScript strict mode requires null check)
+      const byte = randomBytes[i];
+      if (byte === undefined) continue;
+
       // CHECK: Is this random value in the "safe zone"?
-      if (randomBytes[i] < maxValid) {
+      if (byte < maxValid) {
         // ✓ YES - Safe to use! This won't cause bias
 
         // Convert the random number to a character index
         // Example: randomByte = 185, charsLength = 62
         //          185 % 62 = 61 → picks character at position 61 (last character '9')
-        const charIndex = randomBytes[i] % charsLength;
+        const charIndex = byte % charsLength;
 
         // Add the character to our result
         result += chars[charIndex];
@@ -145,7 +148,7 @@ export function generateSecureRandomInt(min: number, max: number): number {
 
   do {
     crypto.getRandomValues(randomBytes);
-    randomValue = randomBytes.reduce((acc, byte, i) => acc + byte * (256 ** i), 0);
+    randomValue = randomBytes.reduce((acc, byte, i) => acc + byte * 256 ** i, 0);
   } while (randomValue >= maxValid);
 
   return min + (randomValue % range);
@@ -250,8 +253,12 @@ export function shuffleArray<T>(array: T[]): T[] {
     //   shuffled[i] = shuffled[j];
     //   shuffled[j] = temp;
     //
-    // Modern way (1 line):
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    // Modern way (1 line) - with strict null checks:
+    const valueI = shuffled[i];
+    const valueJ = shuffled[j];
+    if (valueI !== undefined && valueJ !== undefined) {
+      [shuffled[i], shuffled[j]] = [valueJ, valueI];
+    }
     // What this does:
     //   - Creates temporary array [shuffled[j], shuffled[i]] (swapped order)
     //   - Assigns first value to shuffled[i]
