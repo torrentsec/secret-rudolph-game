@@ -6,7 +6,11 @@ import { Luckiest_Guy, Montserrat, Open_Sans, Roboto } from "next/font/google";
 import Head from "next/head";
 
 // const open_sans = Open_Sans({ subsets: ["latin"], weight: "400" });
-const montserrat = Montserrat({ subsets: ["latin"] });
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  display: "swap", // Shows fallback font immediately while loading
+  fallback: ["Arial", "Helvetica", "sans-serif"], // System fonts to use if Google Fonts fail
+});
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
