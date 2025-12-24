@@ -1,95 +1,79 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { IRefPhaserGame, PhaserGame } from "./PhaserGame";
 import { useRouter } from "next/router";
 import { RudolphGame } from "./game/scenes/RudolphGame";
-import { MainMenu } from "./game/scenes/MainMenu";
 import { itemKeys } from "./game/items";
 import { fetchGame } from "./_utils/useFirestore";
+import { GameInformation } from "./types/types";
 
 function App() {
   const router = useRouter();
   const [isVisible, setIsVisible] = useState(false);
   const [gameId, setGameId] = useState("");
-  const [gameData, setGameData] = useState<any>({});
+  const [gameData, setGameData] = useState<GameInformation | null>(null);
   const [friendName, setFriendName] = useState("");
   const [playerName, setPlayerName] = useState("Anonymous");
+  const [error, setError] = useState("");
 
-  //  References to the PhaserGame component (game and scene are exposed)
   const phaserRef = useRef<IRefPhaserGame | null>(null);
 
   useEffect(() => {
-    // console.log(router.query.gameId);
-    if (router.query.gameId && typeof router.query.gameId == "string") {
+    if (router.query.gameId && typeof router.query.gameId === "string") {
       setGameId(router.query.gameId);
-    } else {
-      // @todo redirect to main page ? or play with default items mode
     }
-  }, [router]);
+  }, [router.query.gameId]);
 
   useEffect(() => {
-    initGameSettings(gameId);
+    if (gameId) {
+      initGameSettings(gameId);
+    }
   }, [gameId]);
 
   const initGameSettings = async (id: string) => {
     try {
       const data = await fetchGame(id);
-
       setGameData(data);
       setFriendName(data.name || "");
+      setError("");
     } catch (err) {
-      return {};
+      console.error(`Failed to initialize game ${id}:`, err);
+      setError("Failed to load game. Please check your game code.");
+      setGameData(null);
     }
   };
 
-  // local storage
-  /* const fetchGameData = async (gameId: string) => {
-    if (!gameId) {
-      // @todo handle game id invalid error
-      // throw new Error("game id is invalid");
-      console.error("game id is invalid");
-      return {};
-    }
-    const data = localStorage.getItem(gameId);
-    if (!data) {
-      return {};
-    }
-    return JSON.parse(data);
-  }; */
-
-  const validatePlayerName = (name: string) => {
+  const validatePlayerName = (name: string): boolean => {
     const regex = /^[\p{L}\p{N} _-]{1,20}$/u;
     return regex.test(name.trim());
   };
 
-  const start = () => {
+  const start = useCallback(() => {
     if (!validatePlayerName(playerName)) {
-      alert(
+      setError(
         "Invalid player name! Please type in 1-20 characters of letters, numbers, spaces, _ and -"
       );
       return;
     }
 
-    // @todo handle invalid game data
-    const likes = gameData.likes || [itemKeys.SNOWFLAKE];
-    const dislikes = gameData.dislikes || [itemKeys.POO];
+    const likes = gameData?.likes || [itemKeys.SNOWFLAKE];
+    const dislikes = gameData?.dislikes || [itemKeys.POO];
 
     if (phaserRef.current) {
       const scene = phaserRef.current.scene as RudolphGame;
 
       if (scene && scene.scene.key === "RudolphGame") {
         scene.startGame({ likes, dislikes });
-
         setIsVisible(false);
+        setError("");
       }
     }
-  };
+  }, [playerName, gameData]);
 
-  // Event emitted from the PhaserGame component
-  const currentScene = (scene: Phaser.Scene) => {
+  const currentScene = useCallback((scene: Phaser.Scene) => {
     if (scene.scene.key === "RudolphGame") {
       setIsVisible(true);
     }
-  };
+  }, []);
 
   return (
     <div id="app">
@@ -111,6 +95,11 @@ function App() {
               This name will be saved and displayed on the scoreboard after you
               play.
             </p>
+            {error && (
+              <p className="text-sm text-red-600 bg-red-50 p-2 rounded">
+                {error}
+              </p>
+            )}
             <button
               type="button"
               className="self-center mt-3 w-fit h-fit rounded-xl p-4 bg-green-700 hover:bg-green-800 text-white hover:cursor-pointer"

@@ -4,6 +4,7 @@ import {
   useLayoutEffect,
   useRef,
   useState,
+  useCallback,
 } from "react";
 import Image from "next/image";
 import StartGame from "./game/main";
@@ -39,33 +40,14 @@ export const PhaserGame = forwardRef<IRefPhaserGame, IProps>(
 
     const router = useRouter();
 
-    /* const saveGameResult = (score: number) => {
-      const data = localStorage.getItem(gameId);
-      if (!data) {
-        // invalid game!
-        console.log("Failed to fetch game data! Check game id");
-        return;
-      }
-      const parsed = JSON.parse(data);
-      const newResult = [...parsed.result, { player: playerName, score }].sort(
-        (a, b) => b.score - a.score
-      );
-
-      localStorage.setItem(
-        gameId,
-        JSON.stringify({ ...parsed, result: newResult })
-      );
-    }; */
-
-    const handleRedirect = () => {
+    const handleRedirect = useCallback(() => {
       router.push(`/results?gameId=${gameId}`);
-    };
+    }, [gameId, router]);
 
-    const handleHelpClick = (e: React.MouseEvent<HTMLElement>) => {
+    const handleHelpClick = useCallback((e: React.MouseEvent<HTMLElement>) => {
       e.stopPropagation();
-
       setShowInstructions(false);
-    };
+    }, []);
 
     useLayoutEffect(() => {
       if (game.current === null) {
@@ -136,6 +118,8 @@ export const PhaserGame = forwardRef<IRefPhaserGame, IProps>(
       return () => {
         EventBus.removeListener("current-scene-ready");
         game.current?.events.removeListener("game-over");
+        game.current?.events.removeListener("update-itemList");
+        game.current?.events.removeListener("update-dislikes");
       };
     }, [currentActiveScene, ref]);
 
@@ -169,6 +153,7 @@ export const PhaserGame = forwardRef<IRefPhaserGame, IProps>(
           💚 Likes:{" "}
           {likedItems.map((itemKey: ItemKey) => (
             <Image
+              key={itemKey}
               src={items[itemKey].path}
               width={24}
               height={24}
@@ -180,6 +165,7 @@ export const PhaserGame = forwardRef<IRefPhaserGame, IProps>(
           💔 Dislikes:{" "}
           {dislikedItems.map((itemKey: ItemKey) => (
             <Image
+              key={itemKey}
               src={items[itemKey].path}
               width={24}
               height={24}

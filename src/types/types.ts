@@ -1,16 +1,23 @@
 import { ItemKey } from "@/game/items";
 
-type GameResult = {
+export type GameResult = {
   id?: string;
   player: string;
   score: number;
 };
 
-type GameInformation = {
+export type GameInformation = {
   name: string;
   likes: ItemKey[];
   dislikes: ItemKey[];
   results: GameResult[];
+  creationDate?: string;
 };
 
-export { type GameInformation, type GameResult };
+export type CreateGameData = {
+  name: string;
+  likes: ItemKey[];
+  dislikes: ItemKey[];
+  results: GameResult[];
+  creationDate: string;
+};
