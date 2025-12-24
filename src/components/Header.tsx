@@ -2,8 +2,19 @@ import { Luckiest_Guy, Sansita_Swashed } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
 
-const luckiest_guy = Luckiest_Guy({ subsets: ["latin"], weight: "400" });
-const sansita_swashed = Sansita_Swashed({ subsets: ["latin"], weight: "600" });
+const luckiest_guy = Luckiest_Guy({
+  subsets: ["latin"],
+  weight: "400",
+  display: "swap", // Shows fallback font immediately while loading
+  fallback: ["Impact", "Arial Black", "sans-serif"], // System fonts similar to Luckiest Guy
+});
+
+const sansita_swashed = Sansita_Swashed({
+  subsets: ["latin"],
+  weight: "600",
+  display: "swap", // Shows fallback font immediately while loading
+  fallback: ["Georgia", "serif"], // System fonts similar to Sansita Swashed
+});
 
 function Header() {
   return (
